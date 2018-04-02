@@ -110,3 +110,14 @@ impl Node {
     }
 }
 
+//pub fn new(width:f32, height: f32, sprite:&Sprite) -> Node {
+//    Node {
+//        size: Size {width : width, height : height},
+//        pos: Pos {x : 0.0, y : 0.0},
+//        anchor_point: AnchorPoint {x: 0.5,  y: 0.5},
+//        children: vec![],
+//        fix_rect: FIX_RECT_ZERO,
+//        need_draw: true,
+//        sprite: Rc::new(cell::RefCell::new(sprite))
+//    }
+//}

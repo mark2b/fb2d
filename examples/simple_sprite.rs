@@ -2,10 +2,12 @@ extern crate fb2d;
 extern crate ctrlc;
 
 use std::process;
+use std::cell;
 
 use fb2d::{Scene, Node, Color};
 
 use fb2d::{ScreenWriterError};
+use fb2d::{RectSprite};
 
 fn main() {
     ctrlc::set_handler(move || {
@@ -29,6 +31,12 @@ fn run() -> Result<(), ScreenWriterError> {
     fb2d::set_graphics_mode();
 
     let mut scene = Scene::new();
+
+//    let background_sprite = RectSprite::new(fb2d::Color::green());
+    let background_node = Node::new_rect_node(1.0, 1.0, Color::green());
+    scene.root_node = cell::Cell::new(Some(background_node));
+
+
     scene.writer = Some(Box::new(fb));
 
     let mut node1 = Node::new_rect_node(0.5, 0.5, Color::green());
@@ -36,7 +44,7 @@ fn run() -> Result<(), ScreenWriterError> {
     node1.anchor_point.x = 0.0;
     node1.anchor_point.y = 0.0;
 
-    scene.root_node.add_node(node1);
+//    scene.root_node.add_node(node1);
 
 
     let node2 = Node::node_from_texture(0.5, 0.5, "mmm.png");
@@ -44,10 +52,10 @@ fn run() -> Result<(), ScreenWriterError> {
 //    node2.pos.y = 0.0;
 //    node2.anchorPoint.x = 0.0;
 //    node2.anchorPoint.y = 0.0;
-    scene.root_node.add_node(node2);
+//    scene.root_node.add_node(node2);
 
     let node3 = Node::node_from_text(1.0, 0.5, "Hello, World !!!", "DejaVuSans.ttf");
-    scene.root_node.add_node(node3);
+//    scene.root_node.add_node(node3);
 
     #[cfg(feature = "simulator")]
     scene.run_once();

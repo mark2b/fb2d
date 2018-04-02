@@ -1,3 +1,4 @@
+use std::cell;
 use std::time;
 use std::thread::sleep;
 use screen_writer::{ScreenWriter};
@@ -8,7 +9,7 @@ use node::Node;
 
 pub struct Scene {
     pub writer: Option<Box<ScreenWriter>>,
-    pub root_node:Node,
+    pub root_node:cell::Cell<Option<Node>>,
     fps:u32,
     dirty:bool,
     pub canvas_buffer: Vec<u32>,
@@ -20,13 +21,15 @@ impl Scene {
         let root_node = Node::new_rect_node(1.0, 1.0, Color::blue());
 
         Scene {
-            root_node : root_node,
+            root_node : cell::Cell::new(None),
             fps : 60,
             dirty : true,
             writer : None,
             canvas_buffer : vec![]
         }
     }
+
+
 
     fn layout(&mut self) {
         if self.writer.is_some() {
@@ -39,7 +42,9 @@ impl Scene {
                 pos : FixPos {x : 0, y : 0}
 
             };
-            self.root_node.layout(frame_rect, writer.get_screen_info());
+            if let &mut Some(ref mut root_node) = self.root_node.get_mut() {
+                root_node.layout(frame_rect, writer.get_screen_info());
+            }
         }
     }
 
@@ -52,11 +57,13 @@ impl Scene {
             }
 
             let screen_info = writer.get_screen_info();
-            if self.root_node.need_draw {
-                self.root_node.draw(screen_info)
-            }
+            if let &mut Some(ref mut root_node) = self.root_node.get_mut() {
+                if root_node.need_draw {
+                    root_node.draw(screen_info)
+                }
 
-            self.root_node.render(screen_info, self.canvas_buffer.as_mut_ptr() as *mut u32);
+                root_node.render(screen_info, self.canvas_buffer.as_mut_ptr() as *mut u32);
+            }
             // FIX IT
             writer.write(self.canvas_buffer.clone());
         }
