@@ -11,9 +11,9 @@ use sprite::{Sprite, render_to_canvas};
 pub struct TextureSprite {
     texture : DynamicImage,
     pub gravity : Gravity,
-    size : FixSize,
+    size : Size,
     raw_pixels : Vec<u8>,
-    frame : FixRect,
+    frame : Rect,
 }
 
 impl TextureSprite {
@@ -27,19 +27,19 @@ impl TextureSprite {
         TextureSprite {
             raw_pixels : load_result.raw_pixels(),
             gravity : GRAVITY_CENTER,
-            size : FixSize {
+            size : Size {
                 width : load_result.width(),
                 height : load_result.height(),
             },
             texture : load_result,
-            frame : FIX_RECT_ZERO,
+            frame : RECT_ZERO,
         }
     }
 }
 
 impl<'a> Sprite<'a> for TextureSprite {
 
-    fn draw(&mut self, outer_rect:&FixRect, _screen_info:&ScreenInfo) {
+    fn draw(&mut self, outer_rect:&Rect, _screen_info:&ScreenInfo) {
         let image = &self.texture;
 
         let mut width = outer_rect.size.width;
@@ -50,7 +50,7 @@ impl<'a> Sprite<'a> for TextureSprite {
             height = outer_rect.size.height.min(height);
             let new_image = image.resize(width, height, imageops::Gaussian);
             self.raw_pixels = new_image.raw_pixels();
-            self.size = FixSize {
+            self.size = Size {
                 width : new_image.width(),
                 height : new_image.height(),
             };
@@ -58,7 +58,7 @@ impl<'a> Sprite<'a> for TextureSprite {
             height = new_image.width();
         }
 
-        let mut frame = FixRect {pos : FIX_POS_ZERO, size : FixSize {width : width, height : height}};
+        let mut frame = Rect {pos : POS_ZERO, size : Size {width : width, height : height}};
 
         frame.pos.x = ((outer_rect.size.width as f32 * self.gravity.x) - (frame.size.width as f32 * self.gravity.x)) as u32;
         frame.pos.y = ((outer_rect.size.height as f32 * self.gravity.y) - (frame.size.height as f32 * self.gravity.y)) as u32;
@@ -67,7 +67,7 @@ impl<'a> Sprite<'a> for TextureSprite {
 
     }
 
-    fn render(&mut self, fixed_rect:&FixRect, screen_info:&ScreenInfo, canvas_ptr:*mut u32) {
+    fn render(&mut self, fixed_rect:&Rect, screen_info:&ScreenInfo, canvas_ptr:*mut u32) {
         let src_slice_ptr_u32 = self.raw_pixels.as_slice().as_ptr() as *mut u32;
         render_to_canvas(src_slice_ptr_u32, fixed_rect, &self.frame, screen_info, canvas_ptr);
     }

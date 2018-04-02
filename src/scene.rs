@@ -32,11 +32,11 @@ impl<'a> Scene<'a> {
         if self.writer.is_some() {
             let writer = self.writer.as_ref().unwrap().as_ref();
             let screen_info = writer.get_screen_info();
-            let frame_rect = FixRect {
-                size : FixSize {
+            let frame_rect = Rect {
+                size : Size {
                     width : screen_info.xres,
                     height : screen_info.yres},
-                pos : FIX_POS_ZERO,
+                pos : POS_ZERO,
             };
 
             if let &mut Some(ref mut root_node) = self.root_node.get_mut() {

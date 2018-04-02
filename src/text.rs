@@ -16,7 +16,7 @@ pub struct TextSprite {
     pub gravity : Gravity,
     text : String,
     font : Font<'static>,
-    rect : FixRect,
+    rect : Rect,
     raw_pixels : Vec<u32>,
 }
 
@@ -35,14 +35,14 @@ impl TextSprite {
             gravity : GRAVITY_CENTER,
             font : font,
             text : String::from(text),
-            rect : FIX_RECT_ZERO,
+            rect : RECT_ZERO,
             raw_pixels : Vec::new(),
         }
     }
 }
 
 impl<'a> Sprite<'a> for TextSprite {
-    fn draw(&mut self, outer_rect:&FixRect, _screen_info:&ScreenInfo) {
+    fn draw(&mut self, outer_rect:&Rect, _screen_info:&ScreenInfo) {
 //        self.rect = *fixed_rect;
 
         let height = 48.0;
@@ -64,10 +64,10 @@ impl<'a> Sprite<'a> for TextSprite {
                     max_y = cmp::max(max_y, bb.max.y as u32);
                 }
             }
-            FixRect {pos : FixPos {x : min_x, y : min_y} , size : FixSize {width : max_x - min_x, height : max_y - min_y}}
+            Rect {pos : Pos {x : min_x, y : min_y} , size : Size {width : max_x - min_x, height : max_y - min_y}}
         };
 
-        let mut frame = FixRect {pos : FIX_POS_ZERO, size : text_frame.size};
+        let mut frame = Rect {pos : POS_ZERO, size : text_frame.size};
 
         let buffer_size = (frame.size.width * frame.size.height) as usize;
 
@@ -95,7 +95,7 @@ impl<'a> Sprite<'a> for TextSprite {
         }
     }
 
-    fn render(&mut self, fixed_rect: &FixRect, screen_info: &ScreenInfo, canvas_ptr:*mut u32) {
+    fn render(&mut self, fixed_rect: &Rect, screen_info: &ScreenInfo, canvas_ptr:*mut u32) {
         let src_slice_ptr_u32 = self.raw_pixels.as_ptr();
         render_to_canvas(src_slice_ptr_u32, fixed_rect, &self.rect, screen_info, canvas_ptr);
     }
