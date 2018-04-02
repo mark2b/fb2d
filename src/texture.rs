@@ -11,7 +11,6 @@ use sprite::{Sprite, render_to_canvas};
 pub struct TextureSprite {
     texture : DynamicImage,
     pub gravity : Gravity,
-    size : Size,
     raw_pixels : Vec<u8>,
     frame : Rect,
 }
@@ -27,10 +26,6 @@ impl TextureSprite {
         TextureSprite {
             raw_pixels : load_result.raw_pixels(),
             gravity : GRAVITY_CENTER,
-            size : Size {
-                width : load_result.width(),
-                height : load_result.height(),
-            },
             texture : load_result,
             frame : RECT_ZERO,
         }
@@ -50,10 +45,6 @@ impl<'a> Sprite<'a> for TextureSprite {
             height = outer_rect.size.height.min(height);
             let new_image = image.resize(width, height, imageops::Gaussian);
             self.raw_pixels = new_image.raw_pixels();
-            self.size = Size {
-                width : new_image.width(),
-                height : new_image.height(),
-            };
             width = new_image.width();
             height = new_image.width();
         }
@@ -68,7 +59,6 @@ impl<'a> Sprite<'a> for TextureSprite {
     }
 
     fn render(&mut self, fixed_rect:&Rect, screen_info:&ScreenInfo, canvas_ptr:*mut u32) {
-        let src_slice_ptr_u32 = self.raw_pixels.as_slice().as_ptr() as *mut u32;
-        render_to_canvas(src_slice_ptr_u32, fixed_rect, &self.frame, screen_info, canvas_ptr);
+        render_to_canvas(self.raw_pixels.as_slice().as_ptr() as *mut u32, fixed_rect, &self.frame, screen_info, canvas_ptr);
     }
 }

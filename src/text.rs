@@ -16,7 +16,7 @@ pub struct TextSprite {
     pub gravity : Gravity,
     text : String,
     font : Font<'static>,
-    rect : Rect,
+    frame: Rect,
     raw_pixels : Vec<u32>,
 }
 
@@ -35,7 +35,7 @@ impl TextSprite {
             gravity : GRAVITY_CENTER,
             font : font,
             text : String::from(text),
-            rect : RECT_ZERO,
+            frame: RECT_ZERO,
             raw_pixels : Vec::new(),
         }
     }
@@ -43,7 +43,6 @@ impl TextSprite {
 
 impl<'a> Sprite<'a> for TextSprite {
     fn draw(&mut self, outer_rect:&Rect, _screen_info:&ScreenInfo) {
-//        self.rect = *fixed_rect;
 
         let height = 48.0;
         let scale = Scale { x: height * 1.0, y: height };
@@ -77,7 +76,6 @@ impl<'a> Sprite<'a> for TextSprite {
         frame.pos.x = ((outer_rect.size.width as f32 * self.gravity.x) - (frame.size.width as f32 * self.gravity.x)) as u32;
         frame.pos.y = ((outer_rect.size.height as f32 * self.gravity.y) - (frame.size.height as f32 * self.gravity.y)) as u32;
 
-        self.rect = frame;
 
         for g in glyphs.clone() {
             if let Some(bb) = g.pixel_bounding_box() {
@@ -93,11 +91,11 @@ impl<'a> Sprite<'a> for TextSprite {
                 })
             }
         }
+        self.frame = frame;
     }
 
     fn render(&mut self, fixed_rect: &Rect, screen_info: &ScreenInfo, canvas_ptr:*mut u32) {
-        let src_slice_ptr_u32 = self.raw_pixels.as_ptr();
-        render_to_canvas(src_slice_ptr_u32, fixed_rect, &self.rect, screen_info, canvas_ptr);
+        render_to_canvas(self.raw_pixels.as_ptr(), fixed_rect, &self.frame, screen_info, canvas_ptr);
     }
 }
 

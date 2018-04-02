@@ -39,9 +39,11 @@ fn run() -> Result<(), ScreenWriterError> {
 
 
     let mut sprite2=  TextureSprite::new_for_texture("mmm.png");
-    let mut node2 = Node::new_texture(FloatRect{pos:FLOAT_POS_ZERO, size:FLOAT_SIZE_FULL}, sprite2);
-    node2.anchor_point = ANCHOR_POINT_TOP_LEFT;
+    let mut node2 = Node::new_texture(FloatRect{pos:FLOAT_POS_ZERO, size: FloatSize {width : 0.7, height : 0.7}}, sprite2);
+    node2.anchor_point = ANCHOR_POINT_CENTER;
 
+
+    &node1.add_node(node2);
 
     let mut sprite3=  TextSprite::new_for_text("Hello, World !!!", "DejaVuSans.ttf");
     sprite3.gravity = GRAVITY_CENTER;
@@ -53,7 +55,6 @@ fn run() -> Result<(), ScreenWriterError> {
     let mut background_node = Node::new_rect_node(FLOAT_RECT_FULL, background_sprite);
 
     &background_node.add_node(node1);
-    &background_node.add_node(node2);
     &background_node.add_node(node3);
 
 
