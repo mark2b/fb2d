@@ -23,6 +23,12 @@ pub struct AnchorPoint {
 }
 
 #[derive(Debug, Copy, Clone)]
+pub struct Gravity {
+    pub x: f32,
+    pub y: f32,
+}
+
+#[derive(Debug, Copy, Clone)]
 pub struct FixPos {
     pub x: u32,
     pub y: u32,
@@ -51,3 +57,24 @@ pub const FLOAT_RECT_FULL : FloatRect = FloatRect {pos : FLOAT_POS_ZERO, size : 
 pub const FIX_SIZE_ZERO : FixSize = FixSize {width : 0, height : 0};
 pub const FIX_POS_ZERO : FixPos = FixPos {x : 0, y : 0};
 pub const FIX_RECT_ZERO : FixRect = FixRect {pos : FIX_POS_ZERO, size : FIX_SIZE_ZERO};
+
+pub const ANCHOR_POINT_CENTER:AnchorPoint = AnchorPoint {x : 0.5, y : 0.5};
+pub const ANCHOR_POINT_TOP_LEFT:AnchorPoint = AnchorPoint {x : 0.0, y : 0.0};
+pub const ANCHOR_POINT_MIDDLE_LEFT:AnchorPoint = AnchorPoint {x : 0.0, y : 0.5};
+pub const ANCHOR_POINT_BOTTOM_LEFT:AnchorPoint = AnchorPoint {x : 0.0, y : 1.0};
+pub const ANCHOR_POINT_TOP_RIGHT:AnchorPoint = AnchorPoint {x : 1.0, y : 0.0};
+pub const ANCHOR_POINT_MIDDLE_RIGHT:AnchorPoint = AnchorPoint {x : 0.1, y : 0.5};
+pub const ANCHOR_POINT_BOTTOM_RIGHT:AnchorPoint = AnchorPoint {x : 1.0, y : 1.0};
+pub const ANCHOR_POINT_TOP_CENTER:AnchorPoint = AnchorPoint {x : 0.5, y : 0.0};
+pub const ANCHOR_POINT_BOTTOM_CENTER:AnchorPoint = AnchorPoint {x : 0.5, y : 1.0};
+
+pub const GRAVITY_CENTER:Gravity = Gravity {x : 0.5, y : 0.5};
+pub const GRAVITY_TOP_LEFT:Gravity = Gravity {x : 0.0, y : 0.0};
+pub const GRAVITY_MIDDLE_LEFT:Gravity = Gravity {x : 0.0, y : 0.5};
+pub const GRAVITY_BOTTOM_LEFT:Gravity = Gravity {x : 0.0, y : 1.0};
+pub const GRAVITY_TOP_RIGHT:Gravity = Gravity {x : 1.0, y : 0.0};
+pub const GRAVITY_MIDDLE_RIGHT:Gravity = Gravity {x : 0.1, y : 0.5};
+pub const GRAVITY_BOTTOM_RIGHT:Gravity = Gravity {x : 1.0, y : 1.0};
+pub const GRAVITY_TOP_CENTER:Gravity = Gravity {x : 0.5, y : 0.0};
+pub const GRAVITY_BOTTOM_CENTER:Gravity = Gravity {x : 0.5, y : 1.0};
+

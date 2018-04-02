@@ -24,19 +24,18 @@ fn main() {
 
 fn run() -> Result<(), ScreenWriterError> {
     #[cfg(feature = "simulator")]
-    let fb = fb2d::screen_writer_for_png("frame_buffer.png", 1920, 1080)?;
+    let mut fb = fb2d::screen_writer_for_png("frame_buffer.png", 1920, 1080)?;
     #[cfg(not(feature = "simulator"))]
     let mut fb = fb2d::screen_writer_for_framebuffer("/dev/fb0")?;
 
     #[cfg(not(feature = "simulator"))]
     fb2d::set_graphics_mode();
-
+    fb.screen_info.show_debug_info = true;
 
 
     let mut sprite1 = RectSprite::new(fb2d::Color::green());
     let mut node1 = Node::new_rect(FloatRect{pos:FLOAT_POS_ZERO, size:FLOAT_SIZE_HALF}, sprite1);
-    node1.anchor_point.x = 0.0;
-    node1.anchor_point.y = 0.0;
+    node1.anchor_point = ANCHOR_POINT_TOP_LEFT;
 
 
     let mut sprite2=  TextureSprite::new_for_texture("mmm.png");
@@ -60,18 +59,6 @@ fn run() -> Result<(), ScreenWriterError> {
     scene.root_node = cell::Cell::new(Some(background_node));
     scene.writer = Some(Box::new(fb));
 
-
-
-
-//    let node2 = Node::node_from_texture(0.5, 0.5, "mmm.png");
-//    node2.pos.x = 0.0;
-//    node2.pos.y = 0.0;
-//    node2.anchorPoint.x = 0.0;
-//    node2.anchorPoint.y = 0.0;
-//    scene.root_node.add_node(node2);
-
-//    let node3 = Node::node_from_text(1.0, 0.5, "Hello, World !!!", "DejaVuSans.ttf");
-//    scene.root_node.add_node(node3);
 
     #[cfg(feature = "simulator")]
     scene.run_once();

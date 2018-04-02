@@ -31,6 +31,11 @@ pub fn render_to_canvas(raw_pixels_ptr:*const u32, outer_frame:&FixRect, inner_f
             if x + outer_frame.pos.x >= screen_info.xres {
                 break;
             }
+
+            if x == 0 || y == 0 {
+
+            }
+
             let dst_offset = start_offset + (y + dst_y_offset) * screen_info.xres + (x + dst_x_offset);
             let src_offset = y * inner_frame.size.width + x;
             unsafe {
@@ -55,34 +60,42 @@ pub fn render_to_canvas(raw_pixels_ptr:*const u32, outer_frame:&FixRect, inner_f
 
                     *canvas_ptr.offset(dst_offset as isize) = new_pixel;
                 }
-                    else {
-                        let src_r = src_r as f32;
-                        let src_g = src_g as f32;
-                        let src_b = src_b as f32;
-                        let src_a = src_a as f32;
+                else if src_a as u32 != 0 {
+                    let src_r = src_r as f32;
+                    let src_g = src_g as f32;
+                    let src_b = src_b as f32;
+                    let src_a = src_a as f32;
 
-                        let right_a = src_a / 0xFF as f32;
-                        let left_a = 1.0 - right_a;
+                    let right_a = src_a / 0xFF as f32;
+                    let left_a = 1.0 - right_a;
 
-                        let r = src_r * right_a + dst_r * left_a;
-                        let g = src_g * right_a + dst_g * left_a;
-                        let b = src_b * right_a + dst_b * left_a;
+                    let r = src_r * right_a + dst_r * left_a;
+                    let g = src_g * right_a + dst_g * left_a;
+                    let b = src_b * right_a + dst_b * left_a;
 
-                        let new_pixel =
-                            ((r as u32) << screen_info.pixel_def.red_offset) |
-                            ((g as u32) << screen_info.pixel_def.green_offset) |
-                            ((b as u32) << screen_info.pixel_def.blue_offset) |
-                                (0xFF << screen_info.pixel_def.transp_offset);
+                    let new_pixel =
+                        ((r as u32) << screen_info.pixel_def.red_offset) |
+                        ((g as u32) << screen_info.pixel_def.green_offset) |
+                        ((b as u32) << screen_info.pixel_def.blue_offset) |
+                            (0xFF << screen_info.pixel_def.transp_offset);
 
-//                        let unit_a = src_a / 0xFF as f32;
-//                        let new_pixel =
-//                            (((unit_a * src_r + (1.0 - unit_a) * dst_r) as u32) << screen_info.pixel_def.red_offset) |
-//                                (((unit_a * src_g + (1.0 - unit_a) * dst_g) as u32) << screen_info.pixel_def.green_offset) |
-//                                (((unit_a * src_b + (1.0 - unit_a) * dst_b) as u32) << screen_info.pixel_def.blue_offset) |
-//                                (0xFF << screen_info.pixel_def.transp_offset);
+                    *canvas_ptr.offset(dst_offset as isize) = new_pixel;
+                } else if screen_info.show_debug_info && (x == 0 || y == 0 || x == inner_frame.size.width - 1 || y == inner_frame.size.height - 1) {
+                    *canvas_ptr.offset(dst_offset as isize) = 0xFF000000;
+                }
+            }
+        }
+    }
 
-                        *canvas_ptr.offset(dst_offset as isize) = new_pixel;
+    if screen_info.show_debug_info {
+        for y in 0..outer_frame.size.height {
+            for x in 0..outer_frame.size.width {
+                if x == 0 || y == 0 || x == outer_frame.size.width - 1 || y == outer_frame.size.height - 1 {
+                    unsafe {
+                        let dst_offset = start_offset + (y + dst_y_offset) * screen_info.xres + (x + dst_x_offset);
+                        *canvas_ptr.offset(dst_offset as isize) = 0xFFFFFFFF;
                     }
+                }
             }
         }
     }

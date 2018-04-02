@@ -21,6 +21,7 @@ pub struct ScreenInfo {
     pub yres:u32,
     pub screen_size:usize,
     pub pixel_def:PixelDef,
+    pub show_debug_info:bool,
 }
 
 #[derive(Debug)]
@@ -145,7 +146,8 @@ impl FrameBuffer {
                     green_offset : vinfo.green.offset,
                     blue_offset : vinfo.blue.offset,
                     transp_offset : vinfo.transp.offset,
-                }
+                },
+                show_debug_info : false,
             },
             var_screen_info: vinfo,
         };
@@ -216,7 +218,8 @@ impl<'a> FrameBufferSimulatorPNG<'a> {
                     green_offset : vinfo.green.offset,
                     blue_offset : vinfo.blue.offset,
                     transp_offset : vinfo.transp.offset,
-                }
+                },
+                show_debug_info : false,
             },
             file_name: file_path,
         };
