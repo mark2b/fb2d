@@ -1,0 +1,25 @@
+[package]
+name = "fb2d"
+version = "0.1.0"
+authors = ["Mark Berner <mark2b@gmail.com>"]
+
+[lib]
+name = "fb2d"
+path = "src/lib.rs"
+
+[dependencies]
+libc = "0.2.2"
+memmap = "0.5.0"
+image = "0.18.0"
+rusttype = "0.5.2"
+
+[[example]]
+name = "simple-sprite"
+path = "examples/simple_sprite.rs"
+
+[features]
+simulator=[]
+
+
+[dev-dependencies]
+ctrlc = "3.1.0"
