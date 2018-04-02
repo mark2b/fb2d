@@ -39,14 +39,14 @@ fn run() -> Result<(), ScreenWriterError> {
 
 
     let mut sprite2=  TextureSprite::new_for_texture("mmm.png");
-    let mut node2 = Node::new_texture(FloatRect{pos:FLOAT_POS_ZERO, size:FLOAT_SIZE_HALF}, sprite2);
+    let mut node2 = Node::new_texture(FloatRect{pos:FLOAT_POS_ZERO, size:FLOAT_SIZE_FULL}, sprite2);
     node2.anchor_point = ANCHOR_POINT_TOP_LEFT;
 
 
     let mut sprite3=  TextSprite::new_for_text("Hello, World !!!", "DejaVuSans.ttf");
-    sprite3.gravity = GRAVITY_TOP_LEFT;
+    sprite3.gravity = GRAVITY_CENTER;
 
-    let mut node3 = Node::new_text(FloatRect{pos:FLOAT_POS_ZERO, size:FLOAT_SIZE_HALF}, sprite3);
+    let mut node3 = Node::new_text(FloatRect{pos:FLOAT_POS_ZERO, size:FLOAT_SIZE_FULL}, sprite3);
 
 
     let mut background_sprite = RectSprite::new(fb2d::Color::blue());
