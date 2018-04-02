@@ -20,7 +20,7 @@ impl RectSprite {
     }
 }
 
-impl Sprite for RectSprite {
+impl<'a> Sprite<'a> for RectSprite {
 
     fn draw(&mut self, fixed_rect:&FixRect, _screen_info:&ScreenInfo) {
         self.rect = *fixed_rect;

@@ -39,7 +39,7 @@ impl<'a> TextSprite<'a> {
     }
 }
 
-impl<'a> Sprite for TextSprite<'a> {
+impl<'a> Sprite<'a> for TextSprite<'a> {
     fn draw(&mut self, fixed_rect:&FixRect, _screen_info:&ScreenInfo) {
         self.rect = *fixed_rect;
 

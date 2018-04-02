@@ -1,5 +1,6 @@
 use std::cell;
 use std::rc::Rc;
+use std::borrow::BorrowMut;
 
 use screen_writer::{ScreenInfo};
 use text::*;
@@ -9,18 +10,17 @@ use dimension::*;
 use shape::*;
 use sprite::Sprite;
 
-
-pub struct Node {
+pub struct Node<'a> {
     pub size:Size,
     pub pos:Pos,
     pub anchor_point:AnchorPoint,
     pub fix_rect : FixRect,
     pub need_draw: bool,
-    children: Vec<cell::RefCell<Node>>,
-    sprite: Rc<cell::RefCell<Sprite>>,
+    children: Vec<cell::RefCell<Node<'a>>>,
+    sprite: Box<Sprite<'a>>,
 }
 
-impl Node {
+impl<'a> Node<'a> {
     fn fix_rect_for_parent_fix_rect(&self, parent_fixed_rect:&FixRect) -> FixRect {
         let node_fix_width = (self.size.width * (parent_fixed_rect.size.width as f32)) as u32;
         let node_fix_height = (self.size.height * (parent_fixed_rect.size.height as f32)) as u32;
@@ -51,7 +51,7 @@ impl Node {
     }
 
     pub fn draw(&mut self, screen_info:&ScreenInfo) {
-        self.sprite.as_ref().borrow_mut().draw(&self.fix_rect, screen_info);
+        self.sprite.draw(&self.fix_rect, screen_info);
         self.need_draw = false;
 
         for child in &self.children {
@@ -61,7 +61,7 @@ impl Node {
     }
 
     pub fn render(&mut self, screen_info:&ScreenInfo, canvas_ptr:*mut u32) {
-        self.sprite.as_ref().borrow_mut().render(&self.fix_rect, screen_info, canvas_ptr);
+        self.sprite.render(&self.fix_rect, screen_info, canvas_ptr);
 
         for child in &self.children {
             let mut child_node = child.borrow_mut();
@@ -69,55 +69,55 @@ impl Node {
         }
     }
 
-    pub fn add_node(&mut self, node:Node) {
+    pub fn add_node(&mut self, node:Node<'a>) {
         self.children.push(cell::RefCell::new(node));
     }
 
-    pub fn new_rect_node(width:f32, height: f32, color: Color) -> Node {
+//    pub fn new_rect_node(width:f32, height: f32, color: Color) -> Node<'a> {
+//        Node {
+//            size: Size {width : width, height : height},
+//            pos: Pos {x : 0.0, y : 0.0},
+//            anchor_point: AnchorPoint {x: 0.5,  y: 0.5},
+//            children: vec![],
+//            fix_rect: FIX_RECT_ZERO,
+//            need_draw: true,
+//            sprite: Rc::new(cell::RefCell::new(RectSprite::new(color)))
+//        }
+//    }
+//
+//    pub fn node_from_texture(width:f32, height: f32, filename: &str) -> Node<'a> {
+//        Node {
+//            size: Size {width : width, height : height},
+//            pos: Pos {x : 0.0, y : 0.0},
+//            anchor_point: AnchorPoint {x: 0.5,  y: 0.5},
+//            children: vec![],
+//            fix_rect: FIX_RECT_ZERO,
+//            need_draw: true,
+//            sprite: Rc::new(cell::RefCell::new(TextureSprite::new_for_texture(filename)))
+//        }
+//    }
+//
+//    pub fn node_from_text(width:f32, height: f32, text: &str, fontname: &str) -> Node<'a> {
+//        Node {
+//            size: Size {width : width, height : height},
+//            pos: Pos {x : 0.0, y : 0.0},
+//            anchor_point: AnchorPoint {x: 0.5,  y: 0.5},
+//            children: vec![],
+//            fix_rect: FIX_RECT_ZERO,
+//            need_draw: true,
+//            sprite: Rc::new(cell::RefCell::new(TextSprite::new_for_text(text, fontname)))
+//        }
+//    }
+    pub fn new(width:f32, height: f32, sprite:RectSprite) -> Node<'a> {
         Node {
-            size: Size {width : width, height : height},
-            pos: Pos {x : 0.0, y : 0.0},
-            anchor_point: AnchorPoint {x: 0.5,  y: 0.5},
+            size: Size { width: width, height: height },
+            pos: Pos { x: 0.0, y: 0.0 },
+            anchor_point: AnchorPoint { x: 0.5, y: 0.5 },
             children: vec![],
             fix_rect: FIX_RECT_ZERO,
             need_draw: true,
-            sprite: Rc::new(cell::RefCell::new(RectSprite::new(color)))
-        }
-    }
-
-    pub fn node_from_texture(width:f32, height: f32, filename: &str) -> Node {
-        Node {
-            size: Size {width : width, height : height},
-            pos: Pos {x : 0.0, y : 0.0},
-            anchor_point: AnchorPoint {x: 0.5,  y: 0.5},
-            children: vec![],
-            fix_rect: FIX_RECT_ZERO,
-            need_draw: true,
-            sprite: Rc::new(cell::RefCell::new(TextureSprite::new_for_texture(filename)))
-        }
-    }
-
-    pub fn node_from_text(width:f32, height: f32, text: &str, fontname: &str) -> Node {
-        Node {
-            size: Size {width : width, height : height},
-            pos: Pos {x : 0.0, y : 0.0},
-            anchor_point: AnchorPoint {x: 0.5,  y: 0.5},
-            children: vec![],
-            fix_rect: FIX_RECT_ZERO,
-            need_draw: true,
-            sprite: Rc::new(cell::RefCell::new(TextSprite::new_for_text(text, fontname)))
+            sprite: Box::new(sprite),
         }
     }
 }
 
-//pub fn new(width:f32, height: f32, sprite:&Sprite) -> Node {
-//    Node {
-//        size: Size {width : width, height : height},
-//        pos: Pos {x : 0.0, y : 0.0},
-//        anchor_point: AnchorPoint {x: 0.5,  y: 0.5},
-//        children: vec![],
-//        fix_rect: FIX_RECT_ZERO,
-//        need_draw: true,
-//        sprite: Rc::new(cell::RefCell::new(sprite))
-//    }
-//}

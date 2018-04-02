@@ -33,7 +33,7 @@ impl TextureSprite {
     }
 }
 
-impl Sprite for TextureSprite {
+impl<'a> Sprite<'a> for TextureSprite {
 
     fn draw(&mut self, fixed_rect:&FixRect, _screen_info:&ScreenInfo) {
         let image = &self.texture;

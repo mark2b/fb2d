@@ -7,18 +7,18 @@ use color::{Color};
 use dimension::{FixRect, FixSize, FixPos};
 use node::Node;
 
-pub struct Scene {
+pub struct Scene<'a> {
     pub writer: Option<Box<ScreenWriter>>,
-    pub root_node:cell::Cell<Option<Node>>,
+    pub root_node:cell::Cell<Option<Node<'a>>>,
     fps:u32,
     dirty:bool,
     pub canvas_buffer: Vec<u32>,
 }
 
-impl Scene {
+impl<'a> Scene<'a> {
 
-    pub fn new() -> Scene {
-        let root_node = Node::new_rect_node(1.0, 1.0, Color::blue());
+    pub fn new() -> Scene<'a> {
+//        let root_node = Node::new_rect_node(1.0, 1.0, Color::blue());
 
         Scene {
             root_node : cell::Cell::new(None),

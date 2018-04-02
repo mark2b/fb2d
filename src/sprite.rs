@@ -2,12 +2,12 @@ use screen_writer::{ScreenInfo, PIXEL_RGBA};
 use dimension::{FixRect};
 
 
-pub trait Sprite {
+pub trait Sprite<'a> {
     fn draw(&mut self, fixed_rect:&FixRect, screen_info:&ScreenInfo);
     fn render(&mut self, fixed_rect:&FixRect, screen_info:&ScreenInfo, canvas_ptr:*mut u32);
 }
 
-impl Sprite {
+impl<'a> Sprite<'a> {
 
 }
 pub fn render_to_canvas(raw_pixels_ptr:*const u32, outer_frame:&FixRect, inner_frame:&FixRect, screen_info:&ScreenInfo, canvas_ptr:*mut u32) {
