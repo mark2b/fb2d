@@ -3,10 +3,8 @@ use std::time;
 use std::thread::sleep;
 use screen_writer::{ScreenWriter};
 
-use color::{Color};
 use dimension::*;
 use node::Node;
-use text::TextSprite;
 
 pub struct Scene<'a> {
     pub writer: Option<Box<ScreenWriter>>,
@@ -38,9 +36,9 @@ impl<'a> Scene<'a> {
                 size : FixSize {
                     width : screen_info.xres,
                     height : screen_info.yres},
-                pos : FixPos {x : 0, y : 0}
-
+                pos : FIX_POS_ZERO,
             };
+
             if let &mut Some(ref mut root_node) = self.root_node.get_mut() {
                 root_node.layout(frame_rect, writer.get_screen_info());
             }

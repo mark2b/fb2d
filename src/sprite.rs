@@ -12,16 +12,8 @@ impl<'a> Sprite<'a> {
 }
 pub fn render_to_canvas(raw_pixels_ptr:*const u32, outer_frame:&FixRect, inner_frame:&FixRect, screen_info:&ScreenInfo, canvas_ptr:*mut u32) {
 
-    let delta_width =  outer_frame.size.width - inner_frame.size.width;
-    let delta_height =  outer_frame.size.height - inner_frame.size.height;
-
-    let anchor_point_x = 0.5f32;
-    let anchor_point_y = 0.5f32;
-
-    let dst_x_offset = (delta_width as f32 * anchor_point_x) as u32;
-    let dst_y_offset = (delta_height as f32  * anchor_point_y) as u32;
-
-    let start_offset = outer_frame.pos.y * screen_info.xres + outer_frame.pos.x;
+    let outer_offset = outer_frame.pos.y * screen_info.xres + outer_frame.pos.x;
+    let inner_offset = outer_offset + inner_frame.pos.y * screen_info.xres + inner_frame.pos.x;
 
     for y in 0..inner_frame.size.height {
         if y + outer_frame.pos.y >= screen_info.yres {
@@ -32,11 +24,7 @@ pub fn render_to_canvas(raw_pixels_ptr:*const u32, outer_frame:&FixRect, inner_f
                 break;
             }
 
-            if x == 0 || y == 0 {
-
-            }
-
-            let dst_offset = start_offset + (y + dst_y_offset) * screen_info.xres + (x + dst_x_offset);
+            let dst_offset = inner_offset + y * screen_info.xres + x;
             let src_offset = y * inner_frame.size.width + x;
             unsafe {
                 let dst_pixel = *canvas_ptr.offset(dst_offset as isize);
@@ -92,7 +80,7 @@ pub fn render_to_canvas(raw_pixels_ptr:*const u32, outer_frame:&FixRect, inner_f
             for x in 0..outer_frame.size.width {
                 if x == 0 || y == 0 || x == outer_frame.size.width - 1 || y == outer_frame.size.height - 1 {
                     unsafe {
-                        let dst_offset = start_offset + (y + dst_y_offset) * screen_info.xres + (x + dst_x_offset);
+                        let dst_offset = outer_offset + y * screen_info.xres + x;
                         *canvas_ptr.offset(dst_offset as isize) = 0xFFFFFFFF;
                     }
                 }

@@ -1,11 +1,8 @@
 use std::cell;
-use std::rc::Rc;
-use std::borrow::BorrowMut;
 
 use screen_writer::{ScreenInfo};
 use text::*;
 use texture::*;
-use color::{Color};
 use dimension::*;
 use shape::*;
 use sprite::Sprite;
@@ -73,46 +70,11 @@ impl<'a, 'b : 'a> Node<'a> {
         self.children.push(cell::RefCell::new(node));
     }
 
-//    pub fn new_rect_node(width:f32, height: f32, color: Color) -> Node<'a> {
-//        Node {
-//            size: Size {width : width, height : height},
-//            pos: Pos {x : 0.0, y : 0.0},
-//            anchor_point: AnchorPoint {x: 0.5,  y: 0.5},
-//            children: vec![],
-//            fix_rect: FIX_RECT_ZERO,
-//            need_draw: true,
-//            sprite: Rc::new(cell::RefCell::new(RectSprite::new(color)))
-//        }
-//    }
-//
-//    pub fn node_from_texture(width:f32, height: f32, filename: &str) -> Node<'a> {
-//        Node {
-//            size: Size {width : width, height : height},
-//            pos: Pos {x : 0.0, y : 0.0},
-//            anchor_point: AnchorPoint {x: 0.5,  y: 0.5},
-//            children: vec![],
-//            fix_rect: FIX_RECT_ZERO,
-//            need_draw: true,
-//            sprite: Rc::new(cell::RefCell::new(TextureSprite::new_for_texture(filename)))
-//        }
-//    }
-//
-//    pub fn node_from_text(width:f32, height: f32, text: &str, fontname: &str) -> Node<'a> {
-//        Node {
-//            size: Size {width : width, height : height},
-//            pos: Pos {x : 0.0, y : 0.0},
-//            anchor_point: AnchorPoint {x: 0.5,  y: 0.5},
-//            children: vec![],
-//            fix_rect: FIX_RECT_ZERO,
-//            need_draw: true,
-//            sprite: Rc::new(cell::RefCell::new(TextSprite::new_for_text(text, fontname)))
-//        }
-//    }
-    pub fn new_rect(frame:FloatRect, sprite:RectSprite) -> Node<'a> {
+    pub fn new_rect_node(frame:FloatRect, sprite:RectSprite) -> Node<'a> {
         Node {
             size: frame.size,
             pos: frame.pos,
-            anchor_point: AnchorPoint { x: 0.5, y: 0.5 },
+            anchor_point: ANCHOR_POINT_CENTER,
             children: vec![],
             fix_rect: FIX_RECT_ZERO,
             need_draw: true,
@@ -122,9 +84,9 @@ impl<'a, 'b : 'a> Node<'a> {
 
     pub fn new_text(frame:FloatRect, sprite:TextSprite) -> Node<'a> {
          Node {
-             size: frame.size,
-             pos: frame.pos,
-            anchor_point: AnchorPoint { x: 0.5, y: 0.5 },
+            size: frame.size,
+            pos: frame.pos,
+            anchor_point: ANCHOR_POINT_CENTER,
             children: vec![],
             fix_rect: FIX_RECT_ZERO,
             need_draw: true,
@@ -136,7 +98,7 @@ impl<'a, 'b : 'a> Node<'a> {
         Node {
             size: frame.size,
             pos: frame.pos,
-            anchor_point: AnchorPoint { x: 0.5, y: 0.5 },
+            anchor_point: ANCHOR_POINT_CENTER,
             children: vec![],
             fix_rect: FIX_RECT_ZERO,
             need_draw: true,
