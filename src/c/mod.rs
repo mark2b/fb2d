@@ -1,5 +1,5 @@
-
 mod c;
+
 pub use self::c::{
     fb_fix_screeninfo,
     fb_var_screeninfo,

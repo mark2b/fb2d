@@ -29,6 +29,12 @@ pub struct Gravity {
 }
 
 #[derive(Debug, Copy, Clone)]
+pub struct Scale {
+    pub x: f32,
+    pub y: f32,
+}
+
+#[derive(Debug, Copy, Clone)]
 pub struct Pos {
     pub x: u32,
     pub y: u32,
@@ -78,3 +84,4 @@ pub const GRAVITY_BOTTOM_RIGHT:Gravity = Gravity {x : 1.0, y : 1.0};
 pub const GRAVITY_TOP_CENTER:Gravity = Gravity {x : 0.5, y : 0.0};
 pub const GRAVITY_BOTTOM_CENTER:Gravity = Gravity {x : 0.5, y : 1.0};
 
+pub const SCALE_SINGLE: Scale = Scale {x : 1.0, y : 1.0};

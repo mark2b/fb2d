@@ -45,8 +45,9 @@ fn run() -> Result<(), ScreenWriterError> {
 
     &node1.add_node(node2);
 
-    let mut sprite3=  TextSprite::new_for_text("Hello, World !!!", "DejaVuSans.ttf");
+    let mut sprite3=  TextSprite::new_for_text("Hello, World !!!", "Arial.ttf");
     sprite3.gravity = GRAVITY_CENTER;
+    sprite3.height = 0.2;
 
     let mut node3 = Node::new_text(FloatRect{pos:FLOAT_POS_ZERO, size:FLOAT_SIZE_FULL}, sprite3);
 

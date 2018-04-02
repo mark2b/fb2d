@@ -4,7 +4,7 @@ use std::cmp;
 use std::fs;
 use std::u32;
 use std::io::Read;
-use rusttype::{Font, FontCollection, Scale, point, PositionedGlyph};
+use rusttype::{Font, FontCollection, point, PositionedGlyph};
 
 use color::*;
 use dimension::*;
@@ -14,6 +14,8 @@ use sprite::{Sprite, render_to_canvas};
 pub struct TextSprite {
     pub color: Color,
     pub gravity : Gravity,
+    pub scale : Scale,
+    pub height : f32,
     text : String,
     font : Font<'static>,
     frame: Rect,
@@ -34,6 +36,8 @@ impl TextSprite {
             color : Color::white(),
             gravity : GRAVITY_CENTER,
             font : font,
+            height : 1.0,
+            scale : SCALE_SINGLE,
             text : String::from(text),
             frame: RECT_ZERO,
             raw_pixels : Vec::new(),
@@ -44,8 +48,8 @@ impl TextSprite {
 impl<'a> Sprite<'a> for TextSprite {
     fn draw(&mut self, outer_rect:&Rect, _screen_info:&ScreenInfo) {
 
-        let height = 48.0;
-        let scale = Scale { x: height * 1.0, y: height };
+        let height = outer_rect.size.height as f32 * self.height;
+        let scale = rusttype::Scale { x: height * self.scale.x, y: height * self.scale.y};
         let v_metrics = self.font.v_metrics(scale);
         let offset = point(0.0, v_metrics.ascent);
         let glyphs: Vec<PositionedGlyph> = self.font.layout(self.text.as_ref(), scale, offset).collect();

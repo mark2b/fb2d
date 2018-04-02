@@ -1,0 +1,10 @@
+<scene>
+    <shape type="rect" width="50%" height="50%">
+        <text pos="15%" size="100% 10%" anchor-point="0 0">Lorem ipsum dolor sit amet,</text>
+        <text pos="30%" size="100% 10%" anchor-point="0 0">consectetur adipiscing elit, sed do </text>
+        <text pos="45%" size="100% 10%" anchor-point="0 0">eiusmod tempor incididunt ut</text>
+        <text pos="60%" size="100% 10%" anchor-point="0 0">labore et dolore magna aliqua.</text>
+        <text pos="75%" size="100% 10%" anchor-point="0 0">Ut enim ad minim veniam,</text>
+        <text pos="75%" size="100% 10%" anchor-point="0 0">quis nostrud exercitation ullamco</text>
+    </shape>
+</scene>
