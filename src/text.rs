@@ -11,17 +11,17 @@ use dimension::*;
 use screen_writer::*;
 use sprite::{Sprite, render_to_canvas};
 
-pub struct TextSprite<'a> {
+pub struct TextSprite {
     pub color: Color,
     text : String,
-    font : Font<'a>,
+    font : Font<'static>,
     rect : FixRect,
     raw_pixels : Vec<u32>,
 }
 
-impl<'a> TextSprite<'a> {
+impl TextSprite {
 
-    pub fn new_for_text(text: &str, font_name: &str) -> TextSprite<'a> {
+    pub fn new_for_text(text: &str, font_name: &str) -> TextSprite {
         let mut file: fs::File = fs::File::open(font_name).unwrap();
 
         let mut font_buffer = Vec::new();
@@ -39,7 +39,7 @@ impl<'a> TextSprite<'a> {
     }
 }
 
-impl<'a> Sprite<'a> for TextSprite<'a> {
+impl<'a> Sprite<'a> for TextSprite {
     fn draw(&mut self, fixed_rect:&FixRect, _screen_info:&ScreenInfo) {
         self.rect = *fixed_rect;
 

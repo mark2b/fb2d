@@ -20,7 +20,7 @@ pub struct Node<'a> {
     sprite: Box<Sprite<'a>>,
 }
 
-impl<'a> Node<'a> {
+impl<'a, 'b : 'a> Node<'a> {
     fn fix_rect_for_parent_fix_rect(&self, parent_fixed_rect:&FixRect) -> FixRect {
         let node_fix_width = (self.size.width * (parent_fixed_rect.size.width as f32)) as u32;
         let node_fix_height = (self.size.height * (parent_fixed_rect.size.height as f32)) as u32;
@@ -108,10 +108,34 @@ impl<'a> Node<'a> {
 //            sprite: Rc::new(cell::RefCell::new(TextSprite::new_for_text(text, fontname)))
 //        }
 //    }
-    pub fn new(width:f32, height: f32, sprite:RectSprite) -> Node<'a> {
+    pub fn new_rect(frame:FloatRect, sprite:RectSprite) -> Node<'a> {
         Node {
-            size: Size { width: width, height: height },
-            pos: Pos { x: 0.0, y: 0.0 },
+            size: frame.size,
+            pos: frame.pos,
+            anchor_point: AnchorPoint { x: 0.5, y: 0.5 },
+            children: vec![],
+            fix_rect: FIX_RECT_ZERO,
+            need_draw: true,
+            sprite: Box::new(sprite),
+        }
+    }
+
+    pub fn new_text(frame:FloatRect, sprite:TextSprite) -> Node<'a> {
+         Node {
+             size: frame.size,
+             pos: frame.pos,
+            anchor_point: AnchorPoint { x: 0.5, y: 0.5 },
+            children: vec![],
+            fix_rect: FIX_RECT_ZERO,
+            need_draw: true,
+            sprite: Box::new(sprite),
+        }
+    }
+
+    pub fn new_texture(frame:FloatRect, sprite:TextureSprite) -> Node<'a> {
+        Node {
+            size: frame.size,
+            pos: frame.pos,
             anchor_point: AnchorPoint { x: 0.5, y: 0.5 },
             children: vec![],
             fix_rect: FIX_RECT_ZERO,

@@ -4,8 +4,9 @@ use std::thread::sleep;
 use screen_writer::{ScreenWriter};
 
 use color::{Color};
-use dimension::{FixRect, FixSize, FixPos};
+use dimension::*;
 use node::Node;
+use text::TextSprite;
 
 pub struct Scene<'a> {
     pub writer: Option<Box<ScreenWriter>>,
@@ -28,8 +29,6 @@ impl<'a> Scene<'a> {
             canvas_buffer : vec![]
         }
     }
-
-
 
     fn layout(&mut self) {
         if self.writer.is_some() {

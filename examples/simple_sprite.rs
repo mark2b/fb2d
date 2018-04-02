@@ -7,7 +7,8 @@ use std::cell;
 use fb2d::{Scene, Node, Color};
 
 use fb2d::{ScreenWriterError};
-use fb2d::{RectSprite};
+use fb2d::{RectSprite, TextureSprite, TextSprite};
+use fb2d::*;
 
 fn main() {
     ctrlc::set_handler(move || {
@@ -30,22 +31,36 @@ fn run() -> Result<(), ScreenWriterError> {
     #[cfg(not(feature = "simulator"))]
     fb2d::set_graphics_mode();
 
+
+
+    let mut sprite1 = RectSprite::new(fb2d::Color::green());
+    let mut node1 = Node::new_rect(FloatRect{pos:FLOAT_POS_ZERO, size:FLOAT_SIZE_HALF}, sprite1);
+    node1.anchor_point.x = 0.0;
+    node1.anchor_point.y = 0.0;
+
+
+    let mut sprite2=  TextureSprite::new_for_texture("mmm.png");
+    let mut node2 = Node::new_texture(FloatRect{pos:FLOAT_POS_ZERO, size:FLOAT_SIZE_HALF}, sprite2);
+
+
+    let mut sprite3=  TextSprite::new_for_text("Hello, World !!!", "DejaVuSans.ttf");
+    let mut node3 = Node::new_text(FloatRect{pos:FLOAT_POS_ZERO, size:FLOAT_SIZE_HALF}, sprite3);
+
+
+    let mut background_sprite = RectSprite::new(fb2d::Color::blue());
+    let mut background_node = Node::new_rect(FLOAT_RECT_FULL, background_sprite);
+
+    &background_node.add_node(node1);
+    &background_node.add_node(node2);
+    &background_node.add_node(node3);
+
+
+
     let mut scene = Scene::new();
-
-    let mut background_sprite = RectSprite::new(fb2d::Color::green());
-    let background_node = Node::new(1.0, 1.0, background_sprite);
-//    let background_node = Node::new_rect_node(1.0, 1.0, Color::green());
     scene.root_node = cell::Cell::new(Some(background_node));
-
-
     scene.writer = Some(Box::new(fb));
 
-//    let mut node1 = Node::new_rect_node(0.5, 0.5, Color::green());
-////    node1.size.height = 0.3;
-//    node1.anchor_point.x = 0.0;
-//    node1.anchor_point.y = 0.0;
 
-//    scene.root_node.add_node(node1);
 
 
 //    let node2 = Node::node_from_texture(0.5, 0.5, "mmm.png");
