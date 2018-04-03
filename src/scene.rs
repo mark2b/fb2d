@@ -1,101 +1,199 @@
 use std::cell;
+use std::collections::*;
 use std::time;
 use std::thread::sleep;
-use screen_writer::{ScreenWriter};
+use screen_writer::{ScreenWriter, ScreenInfo};
 
 use dimension::*;
-use node::Node;
+use node::*;
 
 pub struct Scene<'a> {
     pub writer: Option<Box<ScreenWriter>>,
-    pub root_node:cell::Cell<Option<Node<'a>>>,
     fps:u32,
     dirty:bool,
-    pub canvas_buffer: Vec<u32>,
+    canvas_initialized : bool,
+    pub canvas_buffer: cell::RefCell<Vec<u32>>,
+    pub nodes: HashMap<NodeKey,cell::RefCell<Node<'a>>>,
+    pub hierarchy: HashMap<NodeKey,cell::RefCell<Vec<NodeKey>>>,
 }
 
 impl<'a> Scene<'a> {
 
-    pub fn new() -> Scene<'a> {
-//        let root_node = Node::new_rect_node(1.0, 1.0, Color::blue());
+    pub fn set_root_node(&mut self, node:Node<'a>) {
+        self.nodes.insert(ROOT_NODE_KEY, cell::RefCell::new(node));
+    }
 
+    pub fn add_node(&mut self, node:Node<'a>, to_key:NodeKey) {
+        let mut found = false;
+        if let Some(key_cell) = self.hierarchy.get(&to_key) {
+            let mut children_keys = key_cell.borrow_mut();
+            children_keys.push(node.key);
+            found = true;
+        }
+
+        if !found {
+            self.hierarchy.insert(to_key, cell::RefCell::new(vec![node.key;1]));
+
+        }
+        self.nodes.insert(node.key, cell::RefCell::new(node));
+    }
+
+    pub fn new() -> Scene<'a> {
         Scene {
-            root_node : cell::Cell::new(None),
             fps : 60,
             dirty : true,
             writer : None,
-            canvas_buffer : vec![]
+            canvas_initialized : false,
+            canvas_buffer : cell::RefCell::new(vec![]),
+            nodes : HashMap::new(),
+            hierarchy: HashMap::new(),
         }
     }
 
-    fn layout(&mut self) {
-        if self.writer.is_some() {
-            let writer = self.writer.as_ref().unwrap().as_ref();
-            let screen_info = writer.get_screen_info();
-            let frame_rect = Rect {
-                size : Size {
-                    width : screen_info.xres,
-                    height : screen_info.yres},
-                pos : POS_ZERO,
-            };
+    fn layout(&self, screen_info:&ScreenInfo) {
+        let frame_rect = Rect {
+            size : Size {
+                width : screen_info.xres,
+                height : screen_info.yres,
+            },
+            pos : POS_ZERO,
+        };
 
-            if let &mut Some(ref mut root_node) = self.root_node.get_mut() {
-                root_node.layout(frame_rect, writer.get_screen_info());
+        if let Some(ref root_node) = self.nodes.get(&ROOT_NODE_KEY) {
+            let mut root_node_mut = root_node.borrow_mut();
+            root_node_mut.layout(frame_rect, screen_info);
+
+            if let Some(key_cell) = self.hierarchy.get(&root_node_mut.key) {
+                let mut children_keys = key_cell.borrow_mut();
+                self.layout_nodes(&frame_rect, &children_keys, screen_info);
             }
         }
     }
 
-    fn render_frame(&mut self) {
+    fn layout_nodes(&self, parent_node_rect:&Rect, nodes_keys:&Vec<NodeKey>, screen_info:&ScreenInfo) {
+        for node_key in nodes_keys {
+            if let Some(ref node) = self.nodes.get(node_key) {
+                let mut node_mut = node.borrow_mut();
+                let frame_rect = node_mut.fix_rect_for_parent_fix_rect(parent_node_rect);
+                node_mut.layout(frame_rect, screen_info);
 
-        if self.writer.is_some() {
-            let writer = self.writer.as_ref().unwrap().as_ref();
-            if self.canvas_buffer.len() == 0 {
-                self.canvas_buffer = vec![0xFF; writer.get_screen_info().screen_size];
-            }
-
-            let screen_info = writer.get_screen_info();
-            if let &mut Some(ref mut root_node) = self.root_node.get_mut() {
-                if root_node.need_draw {
-                    root_node.draw(screen_info)
+                if let Some(key_cell) = self.hierarchy.get(&node_mut.key) {
+                    let mut children_keys = key_cell.borrow_mut();
+                    self.layout_nodes(&frame_rect, &children_keys, screen_info);
                 }
-
-                root_node.render(screen_info, self.canvas_buffer.as_mut_ptr() as *mut u32);
             }
-            // FIX IT
-            writer.write(self.canvas_buffer.clone());
         }
     }
 
+    fn draw_root_node(&self, screen_info:&ScreenInfo) {
+        if let Some(ref root_node) = self.nodes.get(&ROOT_NODE_KEY) {
+            let mut root_node_mut = root_node.borrow_mut();
+            root_node_mut.draw_if_need(screen_info);
+
+            if let Some(key_cell) = self.hierarchy.get(&root_node_mut.key) {
+                let mut children_keys = key_cell.borrow_mut();
+                self.draw_nodes(&children_keys, screen_info);
+            }
+        }
+    }
+
+    fn draw_nodes(&self, nodes_keys:&Vec<NodeKey>, screen_info:&ScreenInfo) {
+        for node_key in nodes_keys {
+            if let Some(ref node) = self.nodes.get(node_key) {
+                let mut node_mut = node.borrow_mut();
+                node_mut.draw_if_need(screen_info);
+
+                if let Some(key_cell) = self.hierarchy.get(&node_mut.key) {
+                    let mut children_keys = key_cell.borrow_mut();
+                    self.draw_nodes(&children_keys, screen_info);
+                }
+            }
+        }
+    }
+
+    fn render_root_node(&self, screen_info:&ScreenInfo) {
+        if let Some(ref root_node) = self.nodes.get(&ROOT_NODE_KEY) {
+            let mut root_node_mut = root_node.borrow_mut();
+            root_node_mut.draw_if_need(screen_info);
+            println!("before render");
+            root_node_mut.render(screen_info, self.canvas_buffer.borrow_mut().as_mut_ptr() as *mut u32);
+            println!("after render");
+
+            if let Some(key_cell) = self.hierarchy.get(&root_node_mut.key) {
+                let mut children_keys = key_cell.borrow_mut();
+                self.render_nodes(&children_keys, screen_info);
+            }
+        }
+    }
+
+    fn render_nodes(&self, nodes_keys:&Vec<NodeKey>, screen_info:&ScreenInfo) {
+        for node_key in nodes_keys {
+            if let Some(ref node) = self.nodes.get(node_key) {
+                let mut node_mut = node.borrow_mut();
+                node_mut.render(screen_info, self.canvas_buffer.borrow_mut().as_mut_ptr() as *mut u32);
+
+                if let Some(key_cell) = self.hierarchy.get(&node_mut.key) {
+                    let mut children_keys = key_cell.borrow_mut();
+                    self.render_nodes(&children_keys, screen_info);
+                }
+            }
+        }
+    }
+
+    fn render_frame(&self, screen_info:&ScreenInfo) {
+        self.draw_root_node(screen_info);
+        self.render_root_node(screen_info);
+        // FIX IT
+        if let Some(ref writer) = self.writer {
+            writer.write(self.canvas_buffer.borrow_mut().to_vec());
+        }
+    }
+
+    #[cfg(not(feature = "simulator"))]
     pub fn run(&mut self) {
-        let frame_duration = time::Duration::from_millis((1000 / self.fps) as u64);
-        let mut counter = 0;
-        self.layout();
-        loop {
-            let start_time = time::SystemTime::now();
-            if self.dirty {
-                self.render_frame();
+        if let Some(ref writer) = self.writer {
+            let screen_info = writer.get_screen_info();
+            self.canvas_buffer = cell::RefCell::new(vec![0xFF; writer.get_screen_info().screen_size]);
+
+            let frame_duration = time::Duration::from_millis((1000 / self.fps) as u64);
+            let mut counter = 0;
+            self.layout(screen_info);
+            loop {
+                let start_time = time::SystemTime::now();
+                if self.dirty {
+                    self.render_frame(writer, screen_info);
 //                self.dirty = false;
-            }
-            let end_time = time::SystemTime::now();
+                }
+                let end_time = time::SystemTime::now();
 
-            let duration = end_time.duration_since(start_time).unwrap();
-            if frame_duration > duration {
-                sleep(frame_duration - duration);
-            }
-            counter += 1;
+                let duration = end_time.duration_since(start_time).unwrap();
+                if frame_duration > duration {
+                    sleep(frame_duration - duration);
+                }
+                counter += 1;
 
-            if counter % 100 == 0 {
-                println!("duration:{:?}", duration);
+                if counter % 100 == 0 {
+                    println!("duration:{:?}", duration);
+                }
             }
+
         }
     }
 
-    pub fn run_once(&mut self) {
-        self.layout();
-        let start_time = time::SystemTime::now();
-        self.render_frame();
-        let end_time = time::SystemTime::now();
-        let duration = end_time.duration_since(start_time).unwrap();
-        println!("duration:{:?}", duration);
+    #[cfg(feature = "simulator")]
+    pub fn run(&mut self) {
+        if let Some(ref writer) = self.writer {
+            let m = writer;
+            let screen_info = writer.get_screen_info();
+            self.canvas_buffer = cell::RefCell::new(vec![0xFF; writer.get_screen_info().screen_size]);
+            self.layout(screen_info);
+            let start_time = time::SystemTime::now();
+
+            self.render_frame(screen_info);
+
+            let end_time = time::SystemTime::now();
+            let duration = end_time.duration_since(start_time).unwrap();
+            println!("duration:{:?}", duration);
+        }
     }
 }

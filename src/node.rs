@@ -1,4 +1,6 @@
-use std::cell;
+extern crate uuid;
+
+use std::ptr;
 
 use screen_writer::{ScreenInfo};
 use text::*;
@@ -8,16 +10,20 @@ use shape::*;
 use sprite::Sprite;
 
 pub struct Node<'a> {
+    pub key : NodeKey,
     pub float_frame : FloatRect,
     pub anchor_point:AnchorPoint,
     pub frame : Rect,
     pub need_draw: bool,
-    children: Vec<cell::RefCell<Node<'a>>>,
     sprite: Box<Sprite<'a>>,
 }
 
+pub type NodeKey = [u8;16];
+pub const ROOT_NODE_KEY : NodeKey = [0u8;16];
+
 impl<'a, 'b : 'a> Node<'a> {
-    fn fix_rect_for_parent_fix_rect(&self, parent_node_rect:&Rect) -> Rect {
+
+    pub fn fix_rect_for_parent_fix_rect(&self, parent_node_rect:&Rect) -> Rect {
         let node_width = (self.float_frame.size.width * (parent_node_rect.size.width as f32)) as u32;
         let node_height = (self.float_frame.size.height * (parent_node_rect.size.height as f32)) as u32;
 
@@ -36,44 +42,35 @@ impl<'a, 'b : 'a> Node<'a> {
         }
     }
 
-    pub fn layout(&mut self, frame: Rect, screen_info:&ScreenInfo) {
+    pub fn layout(&mut self, frame: Rect, _screen_info:&ScreenInfo) {
         self.frame = frame;
-
-        for child in &self.children {
-            let mut child_node = child.borrow_mut();
-            let child_node_frame = child_node.fix_rect_for_parent_fix_rect(&self.frame);
-            child_node.layout(child_node_frame, screen_info);
-        }
     }
 
-    pub fn draw(&mut self, screen_info:&ScreenInfo) {
-        self.sprite.draw(&self.frame, screen_info);
-        self.need_draw = false;
-
-        for child in &self.children {
-            let mut child_node = child.borrow_mut();
-            child_node.draw(screen_info);
+    pub fn draw_if_need(&mut self, screen_info:&ScreenInfo) {
+        if self.need_draw {
+            self.sprite.draw(&self.frame, screen_info);
+            self.need_draw = false;
         }
     }
 
     pub fn render(&mut self, screen_info:&ScreenInfo, canvas_ptr:*mut u32) {
         self.sprite.render(&self.frame, screen_info, canvas_ptr);
-
-        for child in &self.children {
-            let mut child_node = child.borrow_mut();
-            child_node.render(screen_info, canvas_ptr);
-        }
     }
 
-    pub fn add_node(&mut self, node:Node<'a>) {
-        self.children.push(cell::RefCell::new(node));
+    fn generate_key() -> [u8;16] {
+        let uuid_key = uuid::Uuid::new_v4();
+        let mut key = [0u8;16];
+        unsafe {
+            ptr::copy(uuid_key.as_bytes().as_ptr(), key.as_mut_ptr(), 16);
+        }
+        key
     }
 
     pub fn new_rect_node(float_frame:FloatRect, sprite:RectSprite) -> Node<'a> {
         Node {
+            key : Self::generate_key(),
             float_frame : float_frame,
             anchor_point: ANCHOR_POINT_CENTER,
-            children: vec![],
             frame: RECT_ZERO,
             need_draw: true,
             sprite: Box::new(sprite),
@@ -82,20 +79,20 @@ impl<'a, 'b : 'a> Node<'a> {
 
     pub fn new_text(float_frame:FloatRect, sprite:TextSprite) -> Node<'a> {
          Node {
-            float_frame : float_frame,
-            anchor_point: ANCHOR_POINT_CENTER,
-            children: vec![],
+             key : Self::generate_key(),
+             float_frame : float_frame,
+             anchor_point: ANCHOR_POINT_CENTER,
              frame: RECT_ZERO,
-            need_draw: true,
-            sprite: Box::new(sprite),
+             need_draw: true,
+             sprite: Box::new(sprite),
         }
     }
 
     pub fn new_texture(float_frame:FloatRect, sprite:TextureSprite) -> Node<'a> {
         Node {
+            key : Self::generate_key(),
             float_frame : float_frame,
             anchor_point: ANCHOR_POINT_CENTER,
-            children: vec![],
             frame: RECT_ZERO,
             need_draw: true,
             sprite: Box::new(sprite),
