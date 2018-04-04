@@ -1,19 +1,19 @@
 
 use screen_writer::{ScreenInfo};
-use color::{Color};
+use color;
 use dimension::{Rect, Size, RECT_ZERO, POS_ZERO};
 use sprite::{Sprite, render_to_canvas};
 
 pub struct RectSprite {
-    pub color: Color,
+    pub color: color::Color,
     rect : Rect,
     raw_pixels : Vec<u32>,
 }
 
 impl RectSprite {
-    pub fn new(color: Color) -> RectSprite {
+    pub fn new() -> RectSprite {
         RectSprite {
-            color : color,
+            color : color::BLACK,
             rect : RECT_ZERO,
             raw_pixels : Vec::new(),
         }
@@ -25,7 +25,7 @@ impl<'a> Sprite<'a> for RectSprite {
     fn draw(&mut self, fixed_rect:&Rect, _screen_info:&ScreenInfo) {
         self.rect = *fixed_rect;
         let size = (self.rect.size.width * self.rect.size.height) as usize;
-        self.raw_pixels = vec![self.color.rgba_as_u32; size];
+        self.raw_pixels = vec![self.color; size];
     }
 
     fn render(&mut self, fixed_rect:&Rect, screen_info:&ScreenInfo, canvas_ptr:*mut u32) {

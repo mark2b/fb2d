@@ -9,18 +9,19 @@ use node::*;
 
 pub struct Scene<'a> {
     pub writer: Option<Box<ScreenWriter>>,
-    fps:u32,
-    dirty:bool,
-    canvas_initialized : bool,
     pub canvas_buffer: cell::RefCell<Vec<u32>>,
     pub nodes: HashMap<NodeKey,cell::RefCell<Node<'a>>>,
     pub hierarchy: HashMap<NodeKey,cell::RefCell<Vec<NodeKey>>>,
+    root_node_key:NodeKey,
+    fps:u32,
+    dirty:bool,
 }
 
 impl<'a> Scene<'a> {
 
     pub fn set_root_node(&mut self, node:Node<'a>) {
-        self.nodes.insert(ROOT_NODE_KEY, cell::RefCell::new(node));
+        self.root_node_key = node.key;
+        self.nodes.insert(node.key, cell::RefCell::new(node));
     }
 
     pub fn add_node(&mut self, node:Node<'a>, to_key:NodeKey) {
@@ -43,10 +44,10 @@ impl<'a> Scene<'a> {
             fps : 60,
             dirty : true,
             writer : None,
-            canvas_initialized : false,
             canvas_buffer : cell::RefCell::new(vec![]),
             nodes : HashMap::new(),
             hierarchy: HashMap::new(),
+            root_node_key : EMPTY_NODE_KEY,
         }
     }
 
@@ -59,7 +60,7 @@ impl<'a> Scene<'a> {
             pos : POS_ZERO,
         };
 
-        if let Some(ref root_node) = self.nodes.get(&ROOT_NODE_KEY) {
+        if let Some(ref root_node) = self.nodes.get(&self.root_node_key) {
             let mut root_node_mut = root_node.borrow_mut();
             root_node_mut.layout(frame_rect, screen_info);
 
@@ -86,7 +87,7 @@ impl<'a> Scene<'a> {
     }
 
     fn draw_root_node(&self, screen_info:&ScreenInfo) {
-        if let Some(ref root_node) = self.nodes.get(&ROOT_NODE_KEY) {
+        if let Some(ref root_node) = self.nodes.get(&self.root_node_key) {
             let mut root_node_mut = root_node.borrow_mut();
             root_node_mut.draw_if_need(screen_info);
 
@@ -112,12 +113,10 @@ impl<'a> Scene<'a> {
     }
 
     fn render_root_node(&self, screen_info:&ScreenInfo) {
-        if let Some(ref root_node) = self.nodes.get(&ROOT_NODE_KEY) {
+        if let Some(ref root_node) = self.nodes.get(&self.root_node_key) {
             let mut root_node_mut = root_node.borrow_mut();
             root_node_mut.draw_if_need(screen_info);
-            println!("before render");
             root_node_mut.render(screen_info, self.canvas_buffer.borrow_mut().as_mut_ptr() as *mut u32);
-            println!("after render");
 
             if let Some(key_cell) = self.hierarchy.get(&root_node_mut.key) {
                 let mut children_keys = key_cell.borrow_mut();
@@ -151,6 +150,7 @@ impl<'a> Scene<'a> {
 
     #[cfg(not(feature = "simulator"))]
     pub fn run(&mut self) {
+
         if let Some(ref writer) = self.writer {
             let screen_info = writer.get_screen_info();
             self.canvas_buffer = cell::RefCell::new(vec![0xFF; writer.get_screen_info().screen_size]);
@@ -161,7 +161,7 @@ impl<'a> Scene<'a> {
             loop {
                 let start_time = time::SystemTime::now();
                 if self.dirty {
-                    self.render_frame(writer, screen_info);
+                    self.render_frame(screen_info);
 //                self.dirty = false;
                 }
                 let end_time = time::SystemTime::now();
@@ -182,8 +182,8 @@ impl<'a> Scene<'a> {
 
     #[cfg(feature = "simulator")]
     pub fn run(&mut self) {
+        println!("{:?}", self.hierarchy);
         if let Some(ref writer) = self.writer {
-            let m = writer;
             let screen_info = writer.get_screen_info();
             self.canvas_buffer = cell::RefCell::new(vec![0xFF; writer.get_screen_info().screen_size]);
             self.layout(screen_info);

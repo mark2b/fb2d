@@ -41,14 +41,14 @@ fn run() -> Result<(), ScreenWriterError> {
     node1.anchor_point = ANCHOR_POINT_TOP_LEFT;
 
     let sprite2=  TextureSprite::new_for_texture("mmm.png");
-    let mut node2 = Node::new_texture(FloatRect{pos:FLOAT_POS_ZERO, size: FloatSize {width : 0.7, height : 0.7}}, sprite2);
+    let mut node2 = Node::new_texture_node(FloatRect{pos:FLOAT_POS_ZERO, size: FloatSize {width : 0.7, height : 0.7}}, sprite2);
     node2.anchor_point = ANCHOR_POINT_CENTER;
 
 
     let mut sprite3=  TextSprite::new_for_text("Hello, World !!!", "Arial.ttf");
     sprite3.gravity = GRAVITY_CENTER;
     sprite3.height = 0.2;
-    let node3 = Node::new_text(FloatRect{pos:FLOAT_POS_ZERO, size:FLOAT_SIZE_FULL}, sprite3);
+    let node3 = Node::new_text_node(FloatRect{pos:FLOAT_POS_ZERO, size:FLOAT_SIZE_FULL}, sprite3);
 
     scene.add_node(node2, node1.key);
     scene.add_node(node1, background_node.key);

@@ -1,10 +1,14 @@
-<scene>
-    <rect type="rect" width="50%" height="50%">
+<scene color="#ffa500">
+    <!--<rect type="rect" width="50%" height="50%">-->
+        <!--<image image="image1.png" />-->
+    <!--</rect>-->
+    <box pos="20% 0.9" width="50%" height="50%" color="#121212FF">
         <text pos="15%" size="100% 10%" anchor-point="0 0">Lorem ipsum dolor sit amet,</text>
-        <text pos="30%" size="100% 10%" anchor-point="0 0">consectetur adipiscing elit, sed do </text>
-        <text pos="45%" size="100% 10%" anchor-point="0 0">eiusmod tempor incididunt ut</text>
-        <text pos="60%" size="100% 10%" anchor-point="0 0">labore et dolore magna aliqua.</text>
-        <text pos="75%" size="100% 10%" anchor-point="0 0">Ut enim ad minim veniam,</text>
-        <text pos="75%" size="100% 10%" anchor-point="0 0">quis nostrud exercitation ullamco</text>
-    </rect>
+        <!--<text pos="30%" size="100% 10%" anchor-point="0 0">consectetur adipiscing elit, sed do </text>-->
+        <!--<text pos="45%" size="100% 10%" anchor-point="0 0">eiusmod tempor incididunt ut</text>-->
+        <!--<text pos="60%" size="100% 10%" anchor-point="0 0">labore et dolore magna aliqua.</text>-->
+        <!--<text pos="75%" size="100% 10%" anchor-point="0 0">Ut enim ad minim veniam,</text>-->
+        <!--<text pos="75%" size="100% 10%" anchor-point="0 0">quis nostrud exercitation ullamco</text>-->
+    </box>
+    <text pos="15%" size="100% 10%" anchor-point="0 0">Lorem ipsum dolor sit amet,</text>
 </scene>

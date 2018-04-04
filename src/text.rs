@@ -7,6 +7,7 @@ use std::io::Read;
 use rusttype::{Font, FontCollection, point, PositionedGlyph};
 
 use color::*;
+use color;
 use dimension::*;
 use screen_writer::*;
 use sprite::{Sprite, render_to_canvas};
@@ -33,7 +34,7 @@ impl TextSprite {
         let font = FontCollection::from_bytes(font_buffer).unwrap().into_font().unwrap();
 
         TextSprite {
-            color : Color::white(),
+            color : color::WHITE,
             gravity : GRAVITY_CENTER,
             font : font,
             height : 1.0,
@@ -89,7 +90,7 @@ impl<'a> Sprite<'a> for TextSprite {
                     let a = (gv * 255.0) as u8;
                     let dst_offset = (gy * frame.size.width as i32 + gx) as isize;
                     unsafe {
-                        let pixel = Color::white().as_rgba_with_alpha( a);
+                        let pixel = color::WHITE.color_with_alpha(a);
                         *raw_pixels_ptr.offset(dst_offset) = pixel;
                     }
                 })
