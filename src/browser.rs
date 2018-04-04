@@ -50,9 +50,9 @@ pub fn show_scene(scene_path:&str, screen_writer:Box<ScreenWriter>) {
                     current_keys.push(node_key);
                 }
                 else if name.local_name == "text" {
-                    let mut text = text::TextSprite::new_for_text("Hello, World !!!", "Arial.ttf");
-                    text.height = 0.10;
-                    let node = process_text_attributes(text, attributes);
+                    let mut text = String::new();
+                    text.push_str("Test");
+                    let node = process_text_attributes(attributes, text);
                     let node_key = node.key;
                     if let Some(parent_key) = current_keys.last().clone() {
                         let parent_key = node::Node::deref_node_key(parent_key);
@@ -72,6 +72,13 @@ pub fn show_scene(scene_path:&str, screen_writer:Box<ScreenWriter>) {
                 }
             }
             Ok(XmlEvent::EndElement { name }) => {
+                if name.local_name == "text" {
+                    if let Some(parent_key) = current_keys.last().clone() {
+                        if let Some(node) = scene.nodes.get(parent_key) {
+
+                        }
+                    }
+                }
                 current_keys.pop();
             }
             Err(e) => {
@@ -96,14 +103,31 @@ fn process_scene_attributes<'a>(_scene:&scene::Scene, attributes:Vec<xml::attrib
 fn process_box_attributes<'a>(attributes:Vec<xml::attribute::OwnedAttribute>) -> node::Node<'a> {
     let color = resolve_color_from_attributes(&attributes, color::GRAY);
     let pos = resolve_position_from_attributes(&attributes, FLOAT_POS_ZERO);
+    let size = resolve_size_from_attributes(&attributes, FLOAT_SIZE_HALF);
+    let anchor_point = resolve_anchor_from_attributes(&attributes, ANCHOR_POINT_CENTER);
 
     let mut box_sprite = shape::RectSprite::new();
     box_sprite.color = color;
-    node::Node::new_rect_node(FloatRect{pos:pos, size:FloatSize{width:0.5, height:0.5}}, box_sprite)
+    let mut node = ::Node::new_rect_node(FloatRect{pos:pos, size:size}, box_sprite);
+    node.anchor_point = anchor_point;
+    node
 }
 
-fn process_text_attributes<'a>(text:text::TextSprite, _attributes:Vec<xml::attribute::OwnedAttribute>) -> node::Node<'a> {
-    node::Node::new_text_node(FloatRect{pos:FloatPos{x:0.0, y:0.0}, size:FloatSize{width:0.5, height:0.5}}, text)
+fn process_text_attributes<'a>(attributes:Vec<xml::attribute::OwnedAttribute>, text:String) -> node::Node<'a> {
+    let color = resolve_color_from_attributes(&attributes, color::GRAY);
+    let pos = resolve_position_from_attributes(&attributes, FLOAT_POS_ZERO);
+    let size = resolve_size_from_attributes(&attributes, FLOAT_SIZE_HALF);
+    let anchor_point = resolve_anchor_from_attributes(&attributes, ANCHOR_POINT_CENTER);
+    let height = resolve_float_from_attributes("height", &attributes, 0.10);
+    let text = resolve_text_from_attributes("text", &attributes, String::new());
+
+
+    let mut text_sprite = text::TextSprite::new_for_text(text.as_ref(), "Arial.ttf");
+    text_sprite.height = height;
+
+    let mut node = node::Node::new_text_node(FloatRect{pos:pos, size:size}, text_sprite);
+    node.anchor_point = anchor_point;
+    node
 }
 
 fn process_texture_attributes<'a>(texture:TextureSprite, _attributes:Vec<xml::attribute::OwnedAttribute>) -> node::Node<'a> {
@@ -133,15 +157,75 @@ fn resolve_position_from_attributes(attributes:&Vec<xml::attribute::OwnedAttribu
         let tokens:Vec<&str> = value.split_whitespace().collect();
         if tokens.len() == 2 {
             return FloatPos {
-                x: resolve_position_from_value(tokens[0], default.x),
-                y: resolve_position_from_value(tokens[1], default.y),
+                x : resolve_float_from_value(tokens[0], default.x),
+                y : resolve_float_from_value(tokens[1], default.y),
+            }
+        }
+        else if tokens.len() == 1 {
+            return FloatPos {
+                x : resolve_float_from_value(tokens[0], default.x),
+                y : resolve_float_from_value(tokens[0], default.y),
             }
         }
     }
     default
 }
 
-fn resolve_position_from_value(value:&str, default:f32) -> f32 {
+fn resolve_size_from_attributes(attributes:&Vec<xml::attribute::OwnedAttribute>, default:FloatSize) -> FloatSize {
+    if let Some(attribute) = attribute_by_name(attributes, "size") {
+        let value = &attribute.value;
+        let tokens:Vec<&str> = value.split_whitespace().collect();
+        if tokens.len() == 2 {
+            return FloatSize {
+                width : resolve_float_from_value(tokens[0], default.width),
+                height : resolve_float_from_value(tokens[1], default.height),
+            }
+        }
+        else if tokens.len() == 1 {
+            return FloatSize {
+                width : resolve_float_from_value(tokens[0], default.width),
+                height : resolve_float_from_value(tokens[0], default.height),
+            }
+        }
+    }
+    default
+}
+
+fn resolve_anchor_from_attributes(attributes:&Vec<xml::attribute::OwnedAttribute>, default:AnchorPoint) -> AnchorPoint {
+    if let Some(attribute) = attribute_by_name(attributes, "anchor-point") {
+        let value = &attribute.value;
+        let tokens:Vec<&str> = value.split_whitespace().collect();
+        if tokens.len() == 2 {
+            return AnchorPoint {
+                x : resolve_float_from_value(tokens[0], default.x),
+                y : resolve_float_from_value(tokens[1], default.y),
+            }
+        }
+            else if tokens.len() == 1 {
+                return AnchorPoint {
+                    x : resolve_float_from_value(tokens[0], default.x),
+                    y : resolve_float_from_value(tokens[0], default.y),
+                }
+            }
+    }
+    default
+}
+fn resolve_float_from_attributes(name:&str, attributes:&Vec<xml::attribute::OwnedAttribute>, default:f32) -> f32 {
+    if let Some(attribute) = attribute_by_name(attributes, name) {
+        let value = &attribute.value;
+        return resolve_float_from_value(value, default);
+    }
+    default
+}
+
+fn resolve_text_from_attributes(name:&str, attributes:&Vec<xml::attribute::OwnedAttribute>, default:String) -> String {
+    if let Some(attribute) = attribute_by_name(attributes, name) {
+        return attribute.value.clone();
+    }
+    default
+}
+
+fn resolve_float_from_value(value:&str, default:f32) -> f32 {
     let value = String::from(value);
     if value.ends_with("%") {
         if let Some(value) = value.get(..(value.len() - 1)) {
