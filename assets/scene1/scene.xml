@@ -3,11 +3,11 @@
         <!--<image image="image1.png" />-->
     <!--</rect>-->
     <box pos="0" size="95% 95%" anchor-point="0.5" color="#121212FF">
-        <text pos="0 15%" size="100% 10%" height="100%" text="Lorem ipsum dolor sit amet," />
-        <text pos="0 30%" size="100% 10%" height="90%" text="consectetur adipiscing elit, sed do" />
-        <text pos="0 45%" size="100% 10%" height="80%" text="eiusmod tempor incididunt ut" />
-        <text pos="0 60%" size="100% 10%" height="70%" text="labore et dolore magna aliqua." />
-        <text pos="0 75%" size="100% 10%" height="60%" text="Ut enim ad minim veniam," />
-        <text pos="0 90%" size="100% 10%" height="50%" text="quis nostrud exercitation ullamco" />
+        <text pos="0 15%" size="100% 10%" anchor-point="0.5 0" height="100%" text="Lorem ipsum dolor sit amet," />
+        <text pos="0 30%" size="100% 10%" anchor-point="0.5 0" height="90%" text="consectetur adipiscing elit, sed do" />
+        <text pos="0 45%" size="100% 10%" anchor-point="0.5 0" height="80%" text="eiusmod tempor incididunt ut" />
+        <text pos="0 60%" size="100% 10%" anchor-point="0.5 0" height="70%" text="labore et dolore magna aliqua." />
+        <text pos="0 75%" size="100% 10%" anchor-point="0.5 0" height="60%" text="Ut enim ad minim veniam," />
+        <text pos="0 90%" size="100% 10%" anchor-point="0.5 0" height="50%" text="quis nostrud exercitation ullamco" />
     </box>
 </scene>

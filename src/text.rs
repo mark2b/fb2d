@@ -12,26 +12,23 @@ use dimension::*;
 use screen_writer::*;
 use sprite::{Sprite, render_to_canvas};
 
+
 pub struct TextSprite {
     pub color: Color,
     pub gravity : Gravity,
     pub scale : Scale,
     pub height : f32,
-    text : String,
-    font : Font<'static>,
+    pub text : String,
+    pub font : Font<'static>,
     frame: Rect,
     raw_pixels : Vec<u32>,
 }
 
 impl TextSprite {
 
-    pub fn new_for_text(text: &str, font_name: &str) -> TextSprite {
-        let mut file: fs::File = fs::File::open(font_name).unwrap();
+    pub fn new() -> TextSprite {
 
-        let mut font_buffer = Vec::new();
-        file.read_to_end(&mut font_buffer).unwrap();
-
-        let font = FontCollection::from_bytes(font_buffer).unwrap().into_font().unwrap();
+        let font = FontCollection::from_bytes(get_default_font_data()).unwrap().into_font().unwrap();
 
         TextSprite {
             color : color::WHITE,
@@ -39,7 +36,7 @@ impl TextSprite {
             font : font,
             height : 1.0,
             scale : SCALE_SINGLE,
-            text : String::from(text),
+            text : String::new(),
             frame: RECT_ZERO,
             raw_pixels : Vec::new(),
         }
@@ -48,7 +45,6 @@ impl TextSprite {
 
 impl<'a> Sprite<'a> for TextSprite {
     fn draw(&mut self, outer_rect:&Rect, _screen_info:&ScreenInfo) {
-
         let height = outer_rect.size.height as f32 * self.height;
         let scale = rusttype::Scale { x: height * self.scale.x, y: height * self.scale.y};
         let v_metrics = self.font.v_metrics(scale);
@@ -102,5 +98,9 @@ impl<'a> Sprite<'a> for TextSprite {
     fn render(&mut self, fixed_rect: &Rect, screen_info: &ScreenInfo, canvas_ptr:*mut u32) {
         render_to_canvas(self.raw_pixels.as_ptr(), fixed_rect, &self.frame, screen_info, canvas_ptr);
     }
+}
+
+fn get_default_font_data() -> Vec<u8> {
+    Vec::from(include_bytes!("default.ttf") as &[u8])
 }
 

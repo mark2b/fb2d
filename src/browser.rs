@@ -122,8 +122,9 @@ fn process_text_attributes<'a>(attributes:Vec<xml::attribute::OwnedAttribute>, t
     let text = resolve_text_from_attributes("text", &attributes, String::new());
 
 
-    let mut text_sprite = text::TextSprite::new_for_text(text.as_ref(), "Arial.ttf");
+    let mut text_sprite = text::TextSprite::new();
     text_sprite.height = height;
+    text_sprite.text = text;
 
     let mut node = node::Node::new_text_node(FloatRect{pos:pos, size:size}, text_sprite);
     node.anchor_point = anchor_point;
