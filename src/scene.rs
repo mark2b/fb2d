@@ -76,6 +76,8 @@ impl<'a> Scene<'a> {
             if let Some(ref node) = self.nodes.get(node_key) {
                 let mut node_mut = node.borrow_mut();
                 let frame_rect = node_mut.fix_rect_for_parent_fix_rect(parent_node_rect);
+
+                println!("fix_rect_for_parent_fix_rect {:?} {:?}", frame_rect, parent_node_rect);
                 node_mut.layout(frame_rect, screen_info);
 
                 if let Some(key_cell) = self.hierarchy.get(&node_mut.key) {
@@ -182,7 +184,6 @@ impl<'a> Scene<'a> {
 
     #[cfg(feature = "simulator")]
     pub fn run(&mut self) {
-        println!("{:?}", self.hierarchy);
         if let Some(ref writer) = self.writer {
             let screen_info = writer.get_screen_info();
             self.canvas_buffer = cell::RefCell::new(vec![0xFF; writer.get_screen_info().screen_size]);

@@ -19,9 +19,9 @@ fn main() {
 
 fn run() -> Result<(), ScreenWriterError> {
     #[cfg(feature = "simulator")]
-    let mut fb = fb2d::screen_writer_for_png("frame_buffer.png", 1920, 1080)?;
+    let fb = fb2d::screen_writer_for_png("frame_buffer.png", 1920, 1080)?;
     #[cfg(not(feature = "simulator"))]
-    let mut fb = fb2d::screen_writer_for_framebuffer("/dev/fb0")?;
+    let fb = fb2d::screen_writer_for_framebuffer("/dev/fb0")?;
 
     fb2d::browser::show_scene("assets/scene1", Box::new(fb));
 

@@ -3,29 +3,30 @@ use std::i64;
 use std::u32;
 
 
-pub type Color = u32;
+#[derive(Debug, Copy, Clone)]
+pub struct Color(pub u32);
 
 pub struct PredefinedColor {
     pub name : &'static str,
     pub color : Color,
 }
 
-pub const GRAY:Color    = 0xFF808080;
-pub const GREEN:Color   = 0xFF008000;
-pub const MAROON:Color  = 0xFF800000;
-pub const SILVER:Color  = 0xFFC0C0C0;
-pub const WHITE:Color   = 0xFFFFFFFF;
-pub const YELLOW:Color  = 0xFFFFFF00;
-pub const RED:Color     = 0xFFFF0000;
-pub const BLACK:Color   = 0xFF000000;
-pub const ACUA:Color    = 0xFF00FFFF;
-pub const FUCHSIA:Color = 0xFF00FFFF;
-pub const LIME:Color    = 0xFF00FF00;
-pub const BLUE:Color    = 0xFF0000FF;
-pub const NAVY:Color    = 0xFF0080FF;
-pub const OLIVE:Color   = 0xFF808000;
-pub const PIRPLE:Color  = 0xFF800080;
-pub const TEAL:Color    = 0xFF008080;
+pub const GRAY:Color    = Color(0xFF808080);
+pub const GREEN:Color   = Color(0xFF008000);
+pub const MAROON:Color  = Color(0xFF800000);
+pub const SILVER:Color  = Color(0xFFC0C0C0);
+pub const WHITE:Color   = Color(0xFFFFFFFF);
+pub const YELLOW:Color  = Color(0xFFFFFF00);
+pub const RED:Color     = Color(0xFFFF0000);
+pub const BLACK:Color   = Color(0xFF000000);
+pub const ACUA:Color    = Color(0xFF00FFFF);
+pub const FUCHSIA:Color = Color(0xFF00FFFF);
+pub const LIME:Color    = Color(0xFF00FF00);
+pub const BLUE:Color    = Color(0xFF0000FF);
+pub const NAVY:Color    = Color(0xFF0080FF);
+pub const OLIVE:Color   = Color(0xFF808000);
+pub const PIRPLE:Color  = Color(0xFF800080);
+pub const TEAL:Color    = Color(0xFF008080);
 
 
 static PREDEFINED_COLORS:[PredefinedColor;16] = [
@@ -47,15 +48,14 @@ static PREDEFINED_COLORS:[PredefinedColor;16] = [
     PredefinedColor { name : "teal", color : TEAL},
 ];
 
-pub trait ColorAlpha {
+impl Color {
 
-    fn color_with_alpha(&self, alpha:u8) -> Color;
-}
-
-impl ColorAlpha for Color {
-
-    fn color_with_alpha(&self, alpha:u8) -> u32 {
-        (self & 0x00FFFFFF) | ((alpha as u32) << 24)
+    pub fn color_with_alpha(&self, alpha:u8) -> Color {
+        let Color(c) = *self;
+        Color((c & 0x00FFFFFF) | ((alpha as u32) << 24))
+    }
+    pub fn color_with_alpha_float(&self, alpha:f32) -> Color {
+        return self.color_with_alpha((0xFF as f32 * alpha) as u8);
     }
 }
 
@@ -74,7 +74,7 @@ pub fn color_by_hex(hex:&str) -> Option<Color> {
         if add_alpha_ff {
             color_value |= 0xFF000000;
         }
-        return Some(color_value);
+        return Some(Color(color_value));
     }
     None
 }

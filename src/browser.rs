@@ -50,9 +50,7 @@ pub fn show_scene(scene_path:&str, screen_writer:Box<ScreenWriter>) {
                     current_keys.push(node_key);
                 }
                 else if name.local_name == "text" {
-                    let mut text = String::new();
-                    text.push_str("Test");
-                    let node = process_text_attributes(attributes, text);
+                    let node = process_text_attributes(attributes);
                     let node_key = node.key;
                     if let Some(parent_key) = current_keys.last().clone() {
                         let parent_key = node::Node::deref_node_key(parent_key);
@@ -61,8 +59,7 @@ pub fn show_scene(scene_path:&str, screen_writer:Box<ScreenWriter>) {
                     current_keys.push(node_key);
                 }
                 else if name.local_name == "image" {
-                    let mut texture = TextureSprite::new_for_texture("image1.png");
-                    let node = process_texture_attributes(texture, attributes);
+                    let node = process_texture_attributes(attributes);
                     let node_key = node.key;
                     if let Some(parent_key) = current_keys.last().clone() {
                         let parent_key = node::Node::deref_node_key(parent_key);
@@ -72,14 +69,7 @@ pub fn show_scene(scene_path:&str, screen_writer:Box<ScreenWriter>) {
                 }
             }
             Ok(XmlEvent::EndElement { name }) => {
-                if name.local_name == "text" {
-                    if let Some(parent_key) = current_keys.last().clone() {
-                        if let Some(node) = scene.nodes.get(parent_key) {
-
-                        }
-                    }
-                }
-                current_keys.pop();
+                 current_keys.pop();
             }
             Err(e) => {
                 println!("Error: {}", e);
@@ -93,15 +83,21 @@ pub fn show_scene(scene_path:&str, screen_writer:Box<ScreenWriter>) {
 }
 
 fn process_scene_attributes<'a>(_scene:&scene::Scene, attributes:Vec<xml::attribute::OwnedAttribute>) -> node::Node<'a> {
-    let color = resolve_color_from_attributes(&attributes, color::GRAY);
+    let anchor_point = resolve_anchor_from_attributes(&attributes, ANCHOR_POINT_CENTER);
+    let alpha = resolve_float_from_attributes("alpha",&attributes, 1.0);
+    let color = resolve_color_from_attributes(&attributes, color::GRAY).color_with_alpha_float(alpha);
 
     let mut box_sprite = shape::RectSprite::new();
     box_sprite.color = color;
-    node::Node::new_rect_node(FLOAT_RECT_FULL, box_sprite)
+
+    let mut node = node::Node::new_rect_node(FLOAT_RECT_FULL, box_sprite);
+    node.anchor_point = anchor_point;
+    node
 }
 
 fn process_box_attributes<'a>(attributes:Vec<xml::attribute::OwnedAttribute>) -> node::Node<'a> {
-    let color = resolve_color_from_attributes(&attributes, color::GRAY);
+    let alpha = resolve_float_from_attributes("alpha",&attributes, 1.0);
+    let color = resolve_color_from_attributes(&attributes, color::GRAY).color_with_alpha_float(alpha);
     let pos = resolve_position_from_attributes(&attributes, FLOAT_POS_ZERO);
     let size = resolve_size_from_attributes(&attributes, FLOAT_SIZE_HALF);
     let anchor_point = resolve_anchor_from_attributes(&attributes, ANCHOR_POINT_CENTER);
@@ -113,12 +109,13 @@ fn process_box_attributes<'a>(attributes:Vec<xml::attribute::OwnedAttribute>) ->
     node
 }
 
-fn process_text_attributes<'a>(attributes:Vec<xml::attribute::OwnedAttribute>, text:String) -> node::Node<'a> {
-    let color = resolve_color_from_attributes(&attributes, color::GRAY);
+fn process_text_attributes<'a>(attributes:Vec<xml::attribute::OwnedAttribute>) -> node::Node<'a> {
+    let alpha = resolve_float_from_attributes("alpha",&attributes, 1.0);
+    let color = resolve_color_from_attributes(&attributes, color::GRAY).color_with_alpha_float(alpha);
     let pos = resolve_position_from_attributes(&attributes, FLOAT_POS_ZERO);
     let size = resolve_size_from_attributes(&attributes, FLOAT_SIZE_HALF);
     let anchor_point = resolve_anchor_from_attributes(&attributes, ANCHOR_POINT_CENTER);
-    let height = resolve_float_from_attributes("height", &attributes, 0.10);
+    let height = resolve_float_from_attributes("height", &attributes, 1.0);
     let text = resolve_text_from_attributes("text", &attributes, String::new());
 
 
@@ -131,8 +128,20 @@ fn process_text_attributes<'a>(attributes:Vec<xml::attribute::OwnedAttribute>, t
     node
 }
 
-fn process_texture_attributes<'a>(texture:TextureSprite, _attributes:Vec<xml::attribute::OwnedAttribute>) -> node::Node<'a> {
-    node::Node::new_texture_node(FloatRect{pos:FloatPos{x:0.0, y:0.0}, size:FloatSize{width:0.5, height:0.5}}, texture)
+fn process_texture_attributes<'a>(attributes:Vec<xml::attribute::OwnedAttribute>) -> node::Node<'a> {
+    let alpha = resolve_float_from_attributes("alpha",&attributes, 1.0);
+    let color = resolve_color_from_attributes(&attributes, color::GRAY).color_with_alpha_float(alpha);
+    let pos = resolve_position_from_attributes(&attributes, FLOAT_POS_ZERO);
+    let size = resolve_size_from_attributes(&attributes, FLOAT_SIZE_HALF);
+    let anchor_point = resolve_anchor_from_attributes(&attributes, ANCHOR_POINT_CENTER);
+    let texture_filename = resolve_text_from_attributes("image", &attributes, String::new());
+
+    let mut texture_sprite = TextureSprite::new();
+    texture_sprite.set_texture_file(texture_filename.as_str());
+
+    let mut node = node::Node::new_texture_node(FloatRect{pos:pos, size:size}, texture_sprite);
+    node.anchor_point = anchor_point;
+    node
 }
 
 fn resolve_color_from_attributes(attributes:&Vec<xml::attribute::OwnedAttribute>, default:Color) -> Color {

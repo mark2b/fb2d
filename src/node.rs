@@ -35,13 +35,16 @@ impl<'a, 'b : 'a> Node<'a> {
         let node_width = (self.float_frame.size.width * (parent_node_rect.size.width as f32)) as u32;
         let node_height = (self.float_frame.size.height * (parent_node_rect.size.height as f32)) as u32;
 
+//        println!("node_width, node_height {:?} {:?}", node_width, node_height);
+//        println!("parent_node_rect {:?}", parent_node_rect);
+
         let half_parent_width = (parent_node_rect.size.width >> 1) as f32;
         let half_parent_height = (parent_node_rect.size.height >> 1) as f32;
 
         Rect {
             pos : Pos {
-                x : ((parent_node_rect.size.width - node_width) as f32 * self.anchor_point.x + (self.float_frame.pos.x * half_parent_width)) as u32,
-                y : ((parent_node_rect.size.height - node_height) as f32 * self.anchor_point.y + (self.float_frame.pos.y * half_parent_height)) as u32,
+                x : parent_node_rect.pos.x + (((parent_node_rect.size.width - node_width) as f32 * self.anchor_point.x + (self.float_frame.pos.x * half_parent_width)) as u32),
+                y : parent_node_rect.pos.y + (((parent_node_rect.size.height - node_height) as f32 * self.anchor_point.y + (self.float_frame.pos.y * half_parent_height)) as u32),
             },
             size : Size {
                 width : node_width,

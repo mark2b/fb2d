@@ -86,8 +86,8 @@ impl<'a> Sprite<'a> for TextSprite {
                     let a = (gv * 255.0) as u8;
                     let dst_offset = (gy * frame.size.width as i32 + gx) as isize;
                     unsafe {
-                        let pixel = color::WHITE.color_with_alpha(a);
-                        *raw_pixels_ptr.offset(dst_offset) = pixel;
+                        let color::Color(c) = self.color.color_with_alpha(a);
+                        *raw_pixels_ptr.offset(dst_offset) = c;
                     }
                 })
             }
