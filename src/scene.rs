@@ -66,23 +66,21 @@ impl<'a> Scene<'a> {
 
             if let Some(key_cell) = self.hierarchy.get(&root_node_mut.key) {
                 let mut children_keys = key_cell.borrow_mut();
-                self.layout_nodes(&frame_rect, &children_keys, screen_info);
+                self.layout_nodes(&frame_rect, &root_node_mut.anchor_point,&children_keys, screen_info);
             }
         }
     }
 
-    fn layout_nodes(&self, parent_node_rect:&Rect, nodes_keys:&Vec<NodeKey>, screen_info:&ScreenInfo) {
+    fn layout_nodes(&self, parent_node_rect:&Rect, parent_acnhor_point:&AnchorPoint, nodes_keys:&Vec<NodeKey>, screen_info:&ScreenInfo) {
         for node_key in nodes_keys {
             if let Some(ref node) = self.nodes.get(node_key) {
                 let mut node_mut = node.borrow_mut();
-                let frame_rect = node_mut.fix_rect_for_parent_fix_rect(parent_node_rect);
-
-                println!("fix_rect_for_parent_fix_rect {:?} {:?}", frame_rect, parent_node_rect);
+                let frame_rect = node_mut.fix_rect_for_parent_fix_rect(parent_node_rect, &parent_acnhor_point);
                 node_mut.layout(frame_rect, screen_info);
 
                 if let Some(key_cell) = self.hierarchy.get(&node_mut.key) {
                     let mut children_keys = key_cell.borrow_mut();
-                    self.layout_nodes(&frame_rect, &children_keys, screen_info);
+                    self.layout_nodes(&frame_rect, &node_mut.anchor_point, &children_keys, screen_info);
                 }
             }
         }
