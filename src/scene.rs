@@ -19,6 +19,18 @@ pub struct Scene<'a> {
 
 impl<'a> Scene<'a> {
 
+    pub fn new() -> Scene<'a> {
+        Scene {
+            fps : 60,
+            dirty : true,
+            writer : None,
+            canvas_buffer : cell::RefCell::new(vec![]),
+            nodes : HashMap::new(),
+            hierarchy: HashMap::new(),
+            root_node_key : EMPTY_NODE_KEY,
+        }
+    }
+
     pub fn set_root_node(&mut self, node:Node<'a>) {
         self.root_node_key = node.key;
         self.nodes.insert(node.key, cell::RefCell::new(node));
@@ -39,17 +51,6 @@ impl<'a> Scene<'a> {
         self.nodes.insert(node.key, cell::RefCell::new(node));
     }
 
-    pub fn new() -> Scene<'a> {
-        Scene {
-            fps : 60,
-            dirty : true,
-            writer : None,
-            canvas_buffer : cell::RefCell::new(vec![]),
-            nodes : HashMap::new(),
-            hierarchy: HashMap::new(),
-            root_node_key : EMPTY_NODE_KEY,
-        }
-    }
 
     fn layout(&self, screen_info:&ScreenInfo) {
         let frame_rect = Rect {
