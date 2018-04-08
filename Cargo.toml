@@ -8,12 +8,16 @@ name = "fb2d"
 path = "src/lib.rs"
 
 [dependencies]
-libc = "0.2.2"
-memmap = "0.5.0"
-image = "0.18.0"
-rusttype = "0.5.2"
-xml-rs = "0.7.0"
-uuid = { version = "0.6.2",features = ["v4"] }
+log = "0.4"
+libc = "0.2"
+zip = "0.3"
+unzip = "0.1"
+tempdir = "0.3"
+memmap = "0.5"
+image = "0.18"
+rusttype = "0.5"
+xml-rs = "0.7"
+uuid = { version = "0.6",features = ["v4"] }
 
 
 [[example]]

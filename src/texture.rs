@@ -1,7 +1,7 @@
 extern crate image;
 
 use std::fs;
-use std::io::{BufReader};
+use std::io;
 use image::{GenericImage, DynamicImage, imageops};
 
 use dimension::*;
@@ -31,7 +31,7 @@ impl TextureSprite {
     pub fn new_for_texture(filename: &str) -> TextureSprite {
 
         let file: fs::File = fs::File::open(filename).unwrap();
-        let reader = BufReader::new(file);
+        let reader = io::BufReader::new(file);
         let load_result = image::load(reader, image::PNG).unwrap();
 
         TextureSprite {
@@ -42,10 +42,16 @@ impl TextureSprite {
         }
     }
 
-    pub fn set_texture_file(&mut self, filename: &str) {
+    pub fn set_texture_filename(&mut self, filename: &str) {
         let file: fs::File = fs::File::open(filename).unwrap();
         println!("{:?}", file);
-        let reader = BufReader::new(file);
+        let reader = io::BufReader::new(file);
+        let load_result = image::load(reader, image::PNG).unwrap();
+        self.texture = Some(load_result);
+    }
+
+    pub fn set_texture_file(&mut self, file: fs::File) {
+        let reader = io::BufReader::new(file);
         let load_result = image::load(reader, image::PNG).unwrap();
         self.texture = Some(load_result);
     }
