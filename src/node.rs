@@ -7,7 +7,7 @@ use text::*;
 use texture::*;
 use dimension::*;
 use shape::*;
-use sprite::Sprite;
+use sprite::*;
 
 pub struct Node<'a> {
     pub key : NodeKey,

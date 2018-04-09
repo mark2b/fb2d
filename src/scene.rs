@@ -1,6 +1,7 @@
 use std::cell;
 use std::collections::*;
 use std::time;
+use std::thread::sleep;
 use screen_writer::{ScreenWriter, ScreenInfo};
 
 use dimension::*;

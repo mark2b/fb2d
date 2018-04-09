@@ -7,6 +7,10 @@ authors = ["Mark Berner <mark2b@gmail.com>"]
 name = "fb2d"
 path = "src/lib.rs"
 
+[[bin]]
+name = "fb2d-show"
+path = "bin/show.rs"
+
 [dependencies]
 log = "0.4"
 libc = "0.2"
@@ -17,6 +21,8 @@ image = "0.18"
 rusttype = "0.5"
 xml-rs = "0.7"
 uuid = { version = "0.6",features = ["v4"] }
+clap = "2.31"
+ctrlc = "3.1.0"
 
 
 [[example]]
@@ -30,6 +36,6 @@ path = "examples/simple_browser.rs"
 [features]
 simulator=[]
 
-
 [dev-dependencies]
+clap = "2.31"
 ctrlc = "3.1.0"
