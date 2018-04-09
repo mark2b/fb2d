@@ -1,7 +1,6 @@
 use std::cell;
 use std::collections::*;
 use std::time;
-use std::thread::sleep;
 use screen_writer::{ScreenWriter, ScreenInfo};
 
 use dimension::*;
@@ -163,7 +162,7 @@ impl<'a> Scene<'a> {
                 let start_time = time::SystemTime::now();
                 if self.dirty {
                     self.render_frame(screen_info);
-//                self.dirty = false;
+                    self.dirty = false;
                 }
                 let end_time = time::SystemTime::now();
 

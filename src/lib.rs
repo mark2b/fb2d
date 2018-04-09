@@ -27,5 +27,3 @@ mod shape;
 mod sprite;
 mod text;
 mod texture;
-
-type BoxResult<T> = Result<T, Box<std::error::Error>>;

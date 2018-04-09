@@ -1,5 +1,3 @@
-use std::mem;
-use std::i64;
 use std::u32;
 
 
@@ -72,7 +70,7 @@ pub fn color_by_hex(hex:&str) -> Option<Color> {
     let add_alpha_ff = hex.len() < 8;
     if let Ok(mut color_value) = u32::from_str_radix(&hex, 16) {
         let r = (color_value & 0x00FF0000) >> 16;
-        let g = (color_value & 0x0000FF00);
+        let g = color_value & 0x0000FF00;
         let b = (color_value & 0x000000FF) << 16;
         if add_alpha_ff {
             color_value |= 0xFF000000;

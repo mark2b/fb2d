@@ -1,12 +1,8 @@
 extern crate tempdir;
 extern crate unzip;
 
-use std::error;
-use std::ffi;
 use std::fs;
-use std::io;
 use std::path;
-use std::rc;
 
 pub struct SceneBundle<'a> {
     source_path: &'a str,
@@ -22,7 +18,7 @@ impl<'a> SceneBundle<'a> {
     }
 
     pub fn open(&mut self) -> Result<(), String> {
-        let mut bundle_path = path::Path::new(self.source_path);
+        let bundle_path = path::Path::new(self.source_path);
         if bundle_path.exists() {
             if bundle_path.is_dir() {
                 Ok(())

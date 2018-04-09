@@ -3,10 +3,7 @@ extern crate tempdir;
 extern crate uuid;
 extern crate xml;
 
-use std::env;
 use std::fs;
-use std::io;
-use std::path;
 use std::f32;
 use xml::reader::{EventReader, XmlEvent};
 
@@ -17,7 +14,6 @@ use node;
 use resource;
 use scene::Scene;
 use shape;
-use screen_writer::ScreenWriter;
 use text;
 use texture::TextureSprite;
 
@@ -29,7 +25,7 @@ impl<'a> Scene<'a> {
 
         let target_path = scene_bundle.target_path();
 
-        let mut scene_xml_file_path = &target_path.join("scene.xml");
+        let scene_xml_file_path = &target_path.join("scene.xml");
         match fs::File::open(scene_xml_file_path) {
             Ok(scene_xml_file) => Self::parse_scene_xml(scene_xml_file, &scene_bundle),
             Err(e) => Err(format!("{} {}", line!(), e))
@@ -81,7 +77,7 @@ impl<'a> Scene<'a> {
                         current_keys.push(node_key);
                     }
                 }
-                Ok(XmlEvent::EndElement { name }) => {
+                Ok(XmlEvent::EndElement { .. }) => {
                     current_keys.pop();
                 }
                 Err(e) => {
@@ -162,9 +158,6 @@ fn process_texture_attributes<'a>(
     attributes: Vec<xml::attribute::OwnedAttribute>,
     scene_bundle: &resource::SceneBundle,
 ) -> node::Node<'a> {
-    let alpha = resolve_float_from_attributes("alpha", &attributes, 1.0);
-    let color =
-        resolve_color_from_attributes(&attributes, color::GRAY).color_with_alpha_float(alpha);
     let pos = resolve_position_from_attributes(&attributes, FLOAT_POS_ZERO);
     let size = resolve_size_from_attributes(&attributes, FLOAT_SIZE_HALF);
     let anchor_point = resolve_anchor_from_attributes(&attributes, ANCHOR_POINT_CENTER);

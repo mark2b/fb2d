@@ -1,9 +1,7 @@
 extern crate rusttype;
 
 use std::cmp;
-use std::fs;
 use std::u32;
-use std::io::Read;
 use rusttype::{Font, FontCollection, point, PositionedGlyph};
 
 use color::*;

@@ -3,12 +3,7 @@ extern crate libc;
 extern crate memmap;
 
 use memmap::{Mmap, Protection};
-use std::convert;
-use std::fmt;
-use std::error::Error;
 use std::fs::{File, OpenOptions};
-use std::error;
-use std::io;
 use std::ptr;
 use std::rc;
 use std::cell;

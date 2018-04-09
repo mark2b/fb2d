@@ -16,7 +16,7 @@ fn main() {
 }
 
 fn run() -> Result<(), String> {
-    match fb2d::scene::Scene::new_from_bundle("assets/scene1") {
+    match fb2d::scene::Scene::new_from_bundle("assets/scene1.zip") {
         Ok(mut scene) => {
             #[cfg(feature = "simulator")]
             let mut fb = fb2d::screen_writer_for_png("frame_buffer.png", 1920, 1080)?;

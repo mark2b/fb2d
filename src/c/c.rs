@@ -3,7 +3,6 @@ extern crate libc;
 use libc::ioctl;
 use std::fs::{OpenOptions, File};
 use std::os::unix::io::AsRawFd;
-use std::io;
 
 const FBIOGET_VSCREENINFO:  libc::c_ulong = 0x4600;
 const FBIOPUT_VSCREENINFO:  libc::c_ulong = 0x4601;
