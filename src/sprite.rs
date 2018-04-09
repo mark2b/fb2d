@@ -11,8 +11,10 @@ impl<'a> Sprite<'a> {
 
 }
 pub fn render_to_canvas(raw_pixels_ptr:*const u32, outer_frame:&Rect, inner_frame:&Rect, screen_info:&ScreenInfo, canvas_ptr:*mut u32) {
+    println!("{} {} {}", outer_frame.pos.y, screen_info.xres, outer_frame.pos.x);
     let outer_offset = outer_frame.pos.y * screen_info.xres + outer_frame.pos.x;
     let inner_offset = outer_offset + inner_frame.pos.y * screen_info.xres + inner_frame.pos.x;
+
 
     for y in 0..inner_frame.size.height {
         if y + outer_frame.pos.y >= screen_info.yres {

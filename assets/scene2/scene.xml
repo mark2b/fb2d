@@ -1,5 +1,8 @@
-<scene color="gray">
-    <box pos="0" size="50% 50%" color="olive" alpha="0.5">
-        <image pos="0" size="20% 80%" image="image1.png" />
+<scene color="gray" tag="scene">
+    <!--<box pos="0" size="50% 50%" color="olive" alpha="0.5">-->
+        <!--<image pos="0" size="20% 80%" image="image1.png" />-->
+    <!--</box>-->
+    <box tag="box1" pos="-50%" size="30% 30%" color="olive" alpha="0.5">
+        <image tag="image1" pos="0" size="20% 80%" image="image1.png" />
     </box>
 </scene>

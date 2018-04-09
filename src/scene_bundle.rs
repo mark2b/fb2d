@@ -95,6 +95,7 @@ fn process_scene_attributes<'a>(
     _scene: &Scene,
     attributes: Vec<xml::attribute::OwnedAttribute>,
 ) -> node::Node<'a> {
+    let tag = resolve_text_from_attributes("tag", &attributes, String::new());
     let anchor_point = resolve_anchor_from_attributes(&attributes, ANCHOR_POINT_CENTER);
     let alpha = resolve_float_from_attributes("alpha", &attributes, 1.0);
     let color =
@@ -105,10 +106,12 @@ fn process_scene_attributes<'a>(
 
     let mut node = node::Node::new_rect_node(FLOAT_RECT_FULL, box_sprite);
     node.anchor_point = anchor_point;
+    node.tag = tag;
     node
 }
 
 fn process_box_attributes<'a>(attributes: Vec<xml::attribute::OwnedAttribute>) -> node::Node<'a> {
+    let tag = resolve_text_from_attributes("tag", &attributes, String::new());
     let alpha = resolve_float_from_attributes("alpha", &attributes, 1.0);
     let color =
         resolve_color_from_attributes(&attributes, color::GRAY).color_with_alpha_float(alpha);
@@ -126,6 +129,7 @@ fn process_box_attributes<'a>(attributes: Vec<xml::attribute::OwnedAttribute>) -
         box_sprite,
     );
     node.anchor_point = anchor_point;
+    node.tag = tag;
     node
 }
 
@@ -133,6 +137,7 @@ fn process_text_attributes<'a>(
     attributes: Vec<xml::attribute::OwnedAttribute>,
     scene_bundle: &resource::SceneBundle,
 ) -> node::Node<'a> {
+    let tag = resolve_text_from_attributes("tag", &attributes, String::new());
     let alpha = resolve_float_from_attributes("alpha", &attributes, 1.0);
     let color =
         resolve_color_from_attributes(&attributes, color::GRAY).color_with_alpha_float(alpha);
@@ -165,6 +170,7 @@ fn process_text_attributes<'a>(
         text_sprite,
     );
     node.anchor_point = anchor_point;
+    node.tag = tag;
     node
 }
 
@@ -172,6 +178,7 @@ fn process_texture_attributes<'a>(
     attributes: Vec<xml::attribute::OwnedAttribute>,
     scene_bundle: &resource::SceneBundle,
 ) -> node::Node<'a> {
+    let tag = resolve_text_from_attributes("tag", &attributes, String::new());
     let pos = resolve_position_from_attributes(&attributes, FLOAT_POS_ZERO);
     let size = resolve_size_from_attributes(&attributes, FLOAT_SIZE_HALF);
     let anchor_point = resolve_anchor_from_attributes(&attributes, ANCHOR_POINT_CENTER);
@@ -194,6 +201,7 @@ fn process_texture_attributes<'a>(
         texture_sprite,
     );
     node.anchor_point = anchor_point;
+    node.tag = tag;
     node
 }
 

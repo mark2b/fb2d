@@ -75,7 +75,7 @@ impl<'a> Sprite<'a> for TextureSprite {
                 height = outer_rect.size.height;
                 width = (height as f32 * image_aspect) as u32;
             }
-            
+
             let new_image = image.resize(width, height, imageops::Gaussian);
             self.raw_pixels = new_image.raw_pixels();
             width = new_image.width();
@@ -89,6 +89,9 @@ impl<'a> Sprite<'a> for TextureSprite {
     }
 
     fn render(&mut self, fixed_rect:&Rect, screen_info:&ScreenInfo, canvas_ptr:*mut u32) {
+
+        println!("render {:?}", fixed_rect);
+
         render_to_canvas(self.raw_pixels.as_slice().as_ptr() as *mut u32, fixed_rect, &self.frame, screen_info, canvas_ptr);
     }
 }

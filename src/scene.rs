@@ -77,6 +77,10 @@ impl<'a> Scene<'a> {
             if let Some(ref node) = self.nodes.get(node_key) {
                 let mut node_mut = node.borrow_mut();
                 let frame_rect = node_mut.fix_rect_for_parent_fix_rect(parent_node_rect, &parent_acnhor_point);
+
+                println!("{} {:?}", node_mut.tag, frame_rect);
+
+
                 node_mut.layout(frame_rect, screen_info);
 
                 if let Some(key_cell) = self.hierarchy.get(&node_mut.key) {
