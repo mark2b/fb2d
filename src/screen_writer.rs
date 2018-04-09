@@ -196,7 +196,7 @@ impl<'a> FrameBufferSimulatorPNG<'a> {
             bits_per_pixel: bits_per_pixel,
             grayscale: 0,
             red: c::fb_bitfield {
-                offset: 16,
+                offset: 0,
                 length: 8,
                 msb_right: 0,
             },
@@ -206,7 +206,7 @@ impl<'a> FrameBufferSimulatorPNG<'a> {
                 msb_right: 0,
             },
             blue: c::fb_bitfield {
-                offset: 0,
+                offset: 16,
                 length: 8,
                 msb_right: 0,
             },

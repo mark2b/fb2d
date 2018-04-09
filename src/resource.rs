@@ -1,5 +1,4 @@
 extern crate tempdir;
-extern crate zip;
 extern crate unzip;
 
 use std::error;
@@ -10,15 +9,55 @@ use std::path;
 use std::rc;
 
 pub struct SceneBundle<'a> {
-    source_path: Option<&'a str>,
+    source_path: &'a str,
     pub temp_dir: Option<tempdir::TempDir>,
 }
 
 impl<'a> SceneBundle<'a> {
-    pub fn new() -> Self {
+    pub fn new(path: &'a str) -> Self {
         SceneBundle {
-            source_path: None,
+            source_path: path,
             temp_dir: None,
+        }
+    }
+
+    pub fn open(&mut self) -> Result<(), String> {
+        let mut bundle_path = path::Path::new(self.source_path);
+        if bundle_path.exists() {
+            if bundle_path.is_dir() {
+                Ok(())
+            } else if bundle_path.is_file() {
+                if let Some(extension) = bundle_path.extension() {
+                    if extension == "zip" || extension == "scene" {
+                        match tempdir::TempDir::new("scene") {
+                            Ok(tempdir) => {
+                                self.temp_dir = Some(tempdir);
+                                match fs::File::open(self.source_path) {
+                                    Ok(archive_file) => {
+                                        let unzipper = unzip::Unzipper::new(archive_file, self.target_path());
+                                        match unzipper.unzip() {
+                                            Ok(_) =>  {
+                                                Ok(())
+                                            },
+                                            Err(e) => Err(format!("{} {:?}", line!(), e))
+                                        }
+                                    },
+                                    Err(e) => Err(format!("{} {:?}", line!(), e))
+                                }
+                            },
+                            Err(e) => Err(format!("{} {:?}", line!(), e))
+                        }
+                    } else {
+                        Err(format!("Wrong bundle file. Expected .zip or .scene but ({}).", self.source_path))
+                    }
+                } else {
+                    Err(format!("Wrong bundle file. Expected .zip or .scene but ({}).", self.source_path))
+                }
+            } else {
+                Err(format!("Wrong bundle path. ({}).", self.source_path))
+            }
+        } else {
+            Err(format!("Bundle does not exists. ({}).", self.source_path))
         }
     }
 
@@ -73,32 +112,31 @@ impl<'a> SceneBundle<'a> {
 ////        }
 //    }
 
-    pub fn open(&mut self, path: &'a str) -> Result<(), String> {
-        if let Ok(temp_dir) = tempdir::TempDir::new("scene") {
-            self.temp_dir = Some(temp_dir);
-            self.source_path = Some(path);
-
-            if let &Some(ref temp_dir2) = &self.temp_dir {
-
-                let archive_file = fs::File::open(path).unwrap();
-                let unzipper = unzip::Unzipper::new(archive_file, temp_dir2.path());
-                unzipper.unzip();
-
-            }
-
-            Ok(())
-        } else {
-            Err(String::from(""))
-        }
-    }
+//    pub fn open(&mut self, path: &'a str) -> Result<(), String> {
+//        let temp_dir:tempdir::TempDir;
+//
+//        {
+//            temp_dir = tempdir::TempDir::new("scene").unwrap();
+//        }
+//        {
+//            self.temp_dir = Some(temp_dir);
+//            self.source_path = Some(path);
+//        }
+//        {
+//            let archive_file = fs::File::open(path).unwrap();
+//            let unzipper = unzip::Unzipper::new(archive_file, temp_dir.path());
+//            unzipper.unzip();
+//        }
+//
+//
+//        Ok(())
+//    }
 
     pub fn target_path(&self) -> path::PathBuf {
         if let &Some(ref temp_dir) = &self.temp_dir {
             temp_dir.path().to_path_buf()
-        } else if let Some(source_path) = self.source_path {
-            path::Path::new(source_path).to_path_buf()
         } else {
-            path::Path::new("").to_path_buf()
+            path::Path::new(self.source_path).to_path_buf()
         }
     }
 }

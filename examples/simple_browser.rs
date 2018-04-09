@@ -20,16 +20,19 @@ fn main() {
 fn run() -> Result<(), ScreenWriterError> {
     //    fb2d::browser::show_scene("assets/scene1", Box::new(fb));
 
-    if let Ok(mut scene) = fb2d::scene::Scene::new_from_bundle("assets/scene1.zip") {
-        #[cfg(feature = "simulator")]
-        let mut fb = fb2d::screen_writer_for_png("frame_buffer.png", 1920, 1080)?;
-        #[cfg(not(feature = "simulator"))]
-        let mut fb = fb2d::screen_writer_for_framebuffer("/dev/fb0")?;
-        fb.screen_info.show_debug_info = true;
+    match fb2d::scene::Scene::new_from_bundle("assets/scene1.zip") {
+        Ok(mut scene) => {
+            #[cfg(feature = "simulator")]
+            let mut fb = fb2d::screen_writer_for_png("frame_buffer.png", 1920, 1080)?;
+            #[cfg(not(feature = "simulator"))]
+            let mut fb = fb2d::screen_writer_for_framebuffer("/dev/fb0")?;
+            fb.screen_info.show_debug_info = true;
 
-        scene.writer = Some(Box::new(fb));
+            scene.writer = Some(Box::new(fb));
 
-        scene.run();
+            scene.run();
+        }
+        Err(e) => eprintln!("Error: {:?}", e),
     }
 
     Ok(())

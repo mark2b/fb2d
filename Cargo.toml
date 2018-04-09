@@ -10,7 +10,6 @@ path = "src/lib.rs"
 [dependencies]
 log = "0.4"
 libc = "0.2"
-zip = "0.3"
 unzip = "0.1"
 tempdir = "0.3"
 memmap = "0.5"

@@ -2,7 +2,6 @@ extern crate log;
 extern crate tempdir;
 extern crate uuid;
 extern crate xml;
-extern crate zip;
 
 use std::env;
 use std::fs;
@@ -24,16 +23,16 @@ use texture::TextureSprite;
 
 impl<'a> Scene<'a> {
     pub fn new_from_bundle(path: &str) -> Result<Scene<'a>, String> {
-        let mut scene_bundle = resource::SceneBundle::new();
-        scene_bundle.open(path)?;
+        let mut scene_bundle = resource::SceneBundle::new(path);
+
+        scene_bundle.open()?;
 
         let target_path = scene_bundle.target_path();
 
         let mut scene_xml_file_path = &target_path.join("scene.xml");
-
         match fs::File::open(scene_xml_file_path) {
             Ok(scene_xml_file) => Self::parse_scene_xml(scene_xml_file, &scene_bundle),
-            Err(e) => Err(format!("Error: {}, {:?}", e, target_path)),
+            Err(e) => Err(format!("{} {}", line!(), e))
         }
     }
 
