@@ -1,6 +1,7 @@
 extern crate rusttype;
 
 use std::cmp;
+use std::fs;
 use std::u32;
 use rusttype::{Font, FontCollection, point, PositionedGlyph};
 
@@ -38,6 +39,13 @@ impl TextSprite {
             frame: RECT_ZERO,
             raw_pixels : Vec::new(),
         }
+    }
+
+    pub fn set_font_file(&mut self, file: &mut fs::File) {
+        use std::io::Read;
+        let mut font_data : Vec<u8> = Vec::new();
+        file.read_to_end(&mut font_data);
+        self.font = FontCollection::from_bytes(font_data).unwrap().into_font().unwrap();
     }
 }
 

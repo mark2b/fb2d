@@ -1,0 +1,5 @@
+<scene color="gray">
+    <box pos="0" size="50% 50%" color="olive" alpha="0.5">
+        <image pos="0" size="20% 80%" image="image1.png" />
+    </box>
+</scene>

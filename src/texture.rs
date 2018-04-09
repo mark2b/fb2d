@@ -62,9 +62,20 @@ impl<'a> Sprite<'a> for TextureSprite {
     fn draw(&mut self, outer_rect:&Rect, _screen_info:&ScreenInfo) {
         if let Some(ref image) = self.texture {
 
-            let mut width = outer_rect.size.width.min(image.width());
-            let mut height = outer_rect.size.height.min(image.height());
+            let frame_aspect = outer_rect.size.width as f32 / outer_rect.size.height as f32;
+            let image_aspect = image.width() as f32 / image.height() as f32;
 
+            let mut width: u32;
+            let mut height: u32;
+
+            if frame_aspect < image_aspect {
+                width = outer_rect.size.width;
+                height = (width as f32 / image_aspect) as u32;
+            } else {
+                height = outer_rect.size.height;
+                width = (height as f32 * image_aspect) as u32;
+            }
+            
             let new_image = image.resize(width, height, imageops::Gaussian);
             self.raw_pixels = new_image.raw_pixels();
             width = new_image.width();

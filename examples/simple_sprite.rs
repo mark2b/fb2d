@@ -3,9 +3,6 @@ extern crate fb2d;
 
 use std::process;
 
-use fb2d::{Node, Scene};
-
-use fb2d::ScreenWriterError;
 use fb2d::{RectSprite, TextSprite, TextureSprite};
 use fb2d::*;
 
@@ -21,7 +18,7 @@ fn main() {
     };
 }
 
-fn run() -> Result<(), ScreenWriterError> {
+fn run() -> Result<(), String> {
     #[cfg(feature = "simulator")]
     let mut fb = fb2d::screen_writer_for_png("frame_buffer.png", 1920, 1080)?;
     #[cfg(not(feature = "simulator"))]
@@ -31,12 +28,12 @@ fn run() -> Result<(), ScreenWriterError> {
     fb2d::set_graphics_mode();
     fb.screen_info.show_debug_info = true;
 
-    let mut scene = Scene::new();
+    let mut scene = fb2d::scene::Scene::new();
 
-    let background_sprite = RectSprite::new(fb2d::Color::blue());
+    let background_sprite = RectSprite::new();
     let background_node = Node::new_rect_node(FLOAT_RECT_FULL, background_sprite);
 
-    let sprite1 = RectSprite::new(fb2d::Color::green());
+    let sprite1 = RectSprite::new();
     let mut node1 = Node::new_rect_node(
         FloatRect {
             pos: FLOAT_POS_ZERO,
@@ -59,7 +56,8 @@ fn run() -> Result<(), ScreenWriterError> {
     );
     node2.anchor_point = ANCHOR_POINT_CENTER;
 
-    let mut sprite3 = TextSprite::new_for_text("Hello, World !!!", "Arial.ttf");
+    let mut sprite3 = TextSprite::new();
+    sprite3.text = String::from("Hello, World !!!");
     sprite3.gravity = GRAVITY_CENTER;
     sprite3.height = 0.2;
     let node3 = Node::new_text_node(

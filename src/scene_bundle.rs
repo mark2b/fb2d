@@ -28,7 +28,7 @@ impl<'a> Scene<'a> {
         let scene_xml_file_path = &target_path.join("scene.xml");
         match fs::File::open(scene_xml_file_path) {
             Ok(scene_xml_file) => Self::parse_scene_xml(scene_xml_file, &scene_bundle),
-            Err(e) => Err(format!("{} {}", line!(), e))
+            Err(e) => Err(format!("{} {}", line!(), e)),
         }
     }
 
@@ -60,7 +60,7 @@ impl<'a> Scene<'a> {
                         }
                         current_keys.push(node_key);
                     } else if name.local_name == "text" {
-                        let node = process_text_attributes(attributes);
+                        let node = process_text_attributes(attributes, &scene_bundle);
                         let node_key = node.key;
                         if let Some(parent_key) = current_keys.last().clone() {
                             let parent_key = node::Node::deref_node_key(parent_key);
@@ -129,7 +129,10 @@ fn process_box_attributes<'a>(attributes: Vec<xml::attribute::OwnedAttribute>) -
     node
 }
 
-fn process_text_attributes<'a>(attributes: Vec<xml::attribute::OwnedAttribute>) -> node::Node<'a> {
+fn process_text_attributes<'a>(
+    attributes: Vec<xml::attribute::OwnedAttribute>,
+    scene_bundle: &resource::SceneBundle,
+) -> node::Node<'a> {
     let alpha = resolve_float_from_attributes("alpha", &attributes, 1.0);
     let color =
         resolve_color_from_attributes(&attributes, color::GRAY).color_with_alpha_float(alpha);
@@ -138,10 +141,21 @@ fn process_text_attributes<'a>(attributes: Vec<xml::attribute::OwnedAttribute>) 
     let anchor_point = resolve_anchor_from_attributes(&attributes, ANCHOR_POINT_CENTER);
     let height = resolve_float_from_attributes("height", &attributes, 1.0);
     let text = resolve_text_from_attributes("text", &attributes, String::new());
+    let font_filename = resolve_text_from_attributes("font", &attributes, String::new());
 
     let mut text_sprite = text::TextSprite::new();
     text_sprite.height = height;
     text_sprite.text = text;
+    text_sprite.color = color;
+
+    if font_filename.len() > 0 {
+        let font_filename_path = scene_bundle.target_path().join(font_filename);
+
+        match fs::File::open(font_filename_path) {
+            Ok(mut font_file) => text_sprite.set_font_file(&mut font_file),
+            Err(e) => println!("{:?}", e),
+        }
+    }
 
     let mut node = node::Node::new_text_node(
         FloatRect {
