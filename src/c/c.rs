@@ -83,58 +83,64 @@ impl ::std::default::Default for fb_var_screeninfo {
     fn default() -> Self { unsafe { ::std::mem::zeroed() } }
 }
 
-pub fn get_fix_screeninfo(dev: &File) -> Result<fb_fix_screeninfo, io::Error> {
+pub fn get_fix_screeninfo(dev: &File) -> Result<fb_fix_screeninfo, String> {
     let mut value: fb_fix_screeninfo = Default::default();
     let result = unsafe {
         ioctl(dev.as_raw_fd(), FBIOGET_FSCREENINFO, &mut value)
     };
     match result {
-        -1 => Err(io::Error::new(io::ErrorKind::Other, "get_fix_screeninfo - Ioctl failed")),
+        -1 => Err(format!("get_fix_screeninfo - Ioctl failed")),
         _ => Ok(value),
     }
 }
 
-pub fn get_var_screeninfo(dev: &File) -> Result<fb_var_screeninfo, io::Error> {
+pub fn get_var_screeninfo(dev: &File) -> Result<fb_var_screeninfo, String> {
     let mut value: fb_var_screeninfo = Default::default();
     let result = unsafe {
         ioctl(dev.as_raw_fd(), FBIOGET_VSCREENINFO, &mut value)
     };
     match result {
-        -1 => Err(io::Error::new(io::ErrorKind::Other, "get_var_screeninfo - Ioctl failed")),
+        -1 => Err(format!("get_var_screeninfo - Ioctl failed")),
         _ => Ok(value),
     }
 }
 
-pub fn put_var_screeninfo(dev: &File, vinfo: &fb_var_screeninfo) -> Result<(), io::Error> {
+pub fn put_var_screeninfo(dev: &File, vinfo: &fb_var_screeninfo) -> Result<(), String> {
     let new_vinfo = vinfo.clone();
     let result = unsafe {
 //        new_vinfo.activate = 256;
         ioctl(dev.as_raw_fd(), FBIOPUT_VSCREENINFO, &new_vinfo)
     };
     match result {
-        -1 => Err(io::Error::new(io::ErrorKind::Other, "put_var_screeninfo - Ioctl failed")),
+        -1 => Err(format!("put_var_screeninfo - Ioctl failed")),
         _ => Ok(()),
     }
 }
 
-pub fn set_graphics_mode() -> Result<(), io::Error> {
-    let result = unsafe {
-        let tty_dev = OpenOptions::new().read(true).write(true).open("/dev/tty")?;
-        ioctl(tty_dev.as_raw_fd(), KDSETMODE, KD_GRAPHICS)
-    };
-    match result {
-        -1 => Err(io::Error::new(io::ErrorKind::Other, "set_graphics_mode - Ioctl failed")),
-        _ => Ok(()),
+pub fn set_graphics_mode() -> Result<(), String> {
+    unsafe {
+        match OpenOptions::new().read(true).write(true).open("/dev/tty") {
+            Ok(tty_dev) => {
+                match ioctl(tty_dev.as_raw_fd(), KDSETMODE, KD_GRAPHICS) {
+                    -1 => Err(format!("set_graphics_mode - Ioctl failed")),
+                    _ => Ok(()),
+                }
+            },
+            Err(e) => Err(format!("set_graphics_mode - ({})", e)),
+        }
     }
 }
 
-pub fn set_text_mode() -> Result<(), io::Error> {
-    let result = unsafe {
-        let tty_dev = OpenOptions::new().read(true).write(true).open("/dev/tty")?;
-        ioctl(tty_dev.as_raw_fd(), KDSETMODE, KD_TEXT)
-    };
-    match result {
-        -1 => Err(io::Error::new(io::ErrorKind::Other, "set_text_mode - Ioctl failed")),
-        _ => Ok(()),
+pub fn set_text_mode() -> Result<(), String> {
+    unsafe {
+        match OpenOptions::new().read(true).write(true).open("/dev/tty") {
+            Ok(tty_dev) => {
+                match ioctl(tty_dev.as_raw_fd(), KDSETMODE, KD_TEXT) {
+                    -1 => Err(format!("set_text_mode - Ioctl failed")),
+                    _ => Ok(()),
+                }
+            },
+            Err(e) => Err(format!("set_text_mode - ({})", e)),
+        }
     }
 }

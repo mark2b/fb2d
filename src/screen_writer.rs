@@ -48,7 +48,7 @@ pub fn set_text_mode() {
     };
 }
 
-pub fn screen_writer_for_framebuffer(devname: &str) -> Result<FrameBuffer, ScreenWriterError> {
+pub fn screen_writer_for_framebuffer(devname: &str) -> Result<FrameBuffer, String> {
     FrameBuffer::new(devname)
 }
 
@@ -56,7 +56,7 @@ pub fn screen_writer_for_png(
     filename: &str,
     width: u32,
     height: u32,
-) -> Result<FrameBufferSimulatorPNG, ScreenWriterError> {
+) -> Result<FrameBufferSimulatorPNG, String> {
     FrameBufferSimulatorPNG::new(filename, width, height)
 }
 
@@ -126,46 +126,49 @@ pub struct FrameBuffer {
 }
 
 impl FrameBuffer {
-    fn new(dev_path: &str) -> Result<FrameBuffer, ScreenWriterError> {
-        let dev = OpenOptions::new().read(true).write(true).open(dev_path)?;
+    fn new(dev_path: &str) -> Result<FrameBuffer, String> {
+        match OpenOptions::new().read(true).write(true).open(dev_path) {
+            Ok(dev) => {
+                let vinfo = c::get_var_screeninfo(&dev)?.clone();
+                let xres = vinfo.xres;
+                let yres = vinfo.yres;
+                let bits_per_pixel = vinfo.bits_per_pixel;
+                let bytes_per_pixel = bits_per_pixel >> 3;
 
-        let vinfo = c::get_var_screeninfo(&dev)?.clone();
-        let xres = vinfo.xres;
-        let yres = vinfo.yres;
-        let bits_per_pixel = vinfo.bits_per_pixel;
-        let bytes_per_pixel = bits_per_pixel >> 3;
+                c::put_var_screeninfo(&dev, &vinfo)?;
 
-        c::put_var_screeninfo(&dev, &vinfo)?;
+                let finfo = c::get_fix_screeninfo(&dev)?;
 
-        let finfo = c::get_fix_screeninfo(&dev)?;
+                let screen_size = (xres * yres) as usize;
 
-        let screen_size = (xres * yres) as usize;
-
-        let screen_buffer_mmap =
-            Mmap::open_with_offset(&dev, Protection::ReadWrite, 0, finfo.smem_len as usize)?;
-
-        let framebuffer = FrameBuffer {
-            dev: dev,
-            fix_screen_info: finfo,
-            screen_buffer: rc::Rc::new(cell::RefCell::new(screen_buffer_mmap)),
-            screen_info: ScreenInfo {
-                xres: xres,
-                yres: yres,
-                screen_size: screen_size,
-                pixel_def: PixelDef {
-                    bits_per_pixel: bits_per_pixel,
-                    bytes_per_pixel: bytes_per_pixel,
-                    red_offset: vinfo.red.offset,
-                    green_offset: vinfo.green.offset,
-                    blue_offset: vinfo.blue.offset,
-                    transp_offset: vinfo.transp.offset,
-                },
-                show_debug_info: false,
+                match Mmap::open_with_offset(&dev, Protection::ReadWrite, 0, finfo.smem_len as usize) {
+                    Ok(screen_buffer_mmap) => {
+                        Ok(FrameBuffer {
+                            dev: dev,
+                            fix_screen_info: finfo,
+                            screen_buffer: rc::Rc::new(cell::RefCell::new(screen_buffer_mmap)),
+                            screen_info: ScreenInfo {
+                                xres: xres,
+                                yres: yres,
+                                screen_size: screen_size,
+                                pixel_def: PixelDef {
+                                    bits_per_pixel: bits_per_pixel,
+                                    bytes_per_pixel: bytes_per_pixel,
+                                    red_offset: vinfo.red.offset,
+                                    green_offset: vinfo.green.offset,
+                                    blue_offset: vinfo.blue.offset,
+                                    transp_offset: vinfo.transp.offset,
+                                },
+                                show_debug_info: false,
+                            },
+                            var_screen_info: vinfo,
+                        })
+                    },
+                    Err(e) => Err(format!("{} {:?}", line!(), e))
+                }
             },
-            var_screen_info: vinfo,
-        };
-
-        return Ok(framebuffer);
+            Err(e) => Err(format!("{} {:?}", line!(), e))
+        }
     }
 }
 
@@ -180,7 +183,7 @@ impl<'a> FrameBufferSimulatorPNG<'a> {
         file_path: &str,
         width: u32,
         height: u32,
-    ) -> Result<FrameBufferSimulatorPNG, ScreenWriterError> {
+    ) -> Result<FrameBufferSimulatorPNG, String> {
         let bits_per_pixel = 32;
         let bytes_per_pixel = 4;
         let page_size = (width * height) as usize;
@@ -253,44 +256,5 @@ impl<'a> FrameBufferSimulatorPNG<'a> {
         };
 
         return Ok(framebuffer);
-    }
-}
-
-#[derive(Debug)]
-pub enum ScreenWriterErrorKind {
-    IoctlFailed,
-    IoError,
-}
-
-#[derive(Debug)]
-pub struct ScreenWriterError {
-    pub kind: ScreenWriterErrorKind,
-    pub details: String,
-}
-
-impl ScreenWriterError {
-    fn new(kind: ScreenWriterErrorKind, details: &str) -> ScreenWriterError {
-        ScreenWriterError {
-            kind: kind,
-            details: String::from(details),
-        }
-    }
-}
-
-impl error::Error for ScreenWriterError {
-    fn description(&self) -> &str {
-        &self.details
-    }
-}
-
-impl fmt::Display for ScreenWriterError {
-    fn fmt(&self, fmt: &mut fmt::Formatter) -> fmt::Result {
-        write!(fmt, "{}", self.description())
-    }
-}
-
-impl convert::From<io::Error> for ScreenWriterError {
-    fn from(err: io::Error) -> ScreenWriterError {
-        ScreenWriterError::new(ScreenWriterErrorKind::IoError, err.description())
     }
 }

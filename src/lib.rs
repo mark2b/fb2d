@@ -13,7 +13,7 @@ pub use text::TextSprite;
 pub use texture::TextureSprite;
 pub use dimension::*;
 pub use screen_writer::{screen_writer_for_framebuffer, screen_writer_for_png, set_graphics_mode,
-                        set_text_mode, ScreenWriter, ScreenWriterError};
+                        set_text_mode, ScreenWriter};
 
 mod c;
 mod color;
@@ -27,3 +27,5 @@ mod shape;
 mod sprite;
 mod text;
 mod texture;
+
+type BoxResult<T> = Result<T, Box<std::error::Error>>;
