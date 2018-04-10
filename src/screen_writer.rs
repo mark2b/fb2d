@@ -12,8 +12,8 @@ use c;
 
 #[derive(Debug)]
 pub struct ScreenInfo {
-    pub xres: u32,
-    pub yres: u32,
+    pub xres: i32,
+    pub yres: i32,
     pub screen_size: usize,
     pub pixel_def: PixelDef,
     pub show_debug_info: bool,
@@ -89,7 +89,7 @@ impl<'a> ScreenWriter for FrameBufferSimulatorPNG<'a> {
             offset_u8 += 4;
         }
         let im =
-            image::RgbaImage::from_raw(screen_info.xres, screen_info.yres, raw_pixels_u8).unwrap();
+            image::RgbaImage::from_raw(screen_info.xres as u32, screen_info.yres as u32, raw_pixels_u8).unwrap();
         im.save(self.file_name).unwrap();
     }
 }
@@ -143,8 +143,8 @@ impl FrameBuffer {
                             fix_screen_info: finfo,
                             screen_buffer: rc::Rc::new(cell::RefCell::new(screen_buffer_mmap)),
                             screen_info: ScreenInfo {
-                                xres: xres,
-                                yres: yres,
+                                xres: xres as i32,
+                                yres: yres as i32,
                                 screen_size: screen_size,
                                 pixel_def: PixelDef {
                                     bits_per_pixel: bits_per_pixel,
@@ -234,8 +234,8 @@ impl<'a> FrameBufferSimulatorPNG<'a> {
 
         let framebuffer = FrameBufferSimulatorPNG {
             screen_info: ScreenInfo {
-                xres: width,
-                yres: height,
+                xres: width as i32,
+                yres: height as i32,
                 screen_size: screen_size,
                 pixel_def: PixelDef {
                     bits_per_pixel: bits_per_pixel,

@@ -37,40 +37,23 @@ impl<'a, 'b : 'a> Node<'a> {
         let mut node_width = self.float_frame.size.width * parent_node_rect.size.width as f32;
         let mut node_height = self.float_frame.size.height * parent_node_rect.size.height as f32;
 
-
         let parent_node_x = parent_node_rect.pos.x as f32 + parent_node_rect.size.width as f32 * parent_anchor_point.x;
         let parent_node_y = parent_node_rect.pos.y as f32 + parent_node_rect.size.height as f32 * parent_anchor_point.y;
-
-        println!("1. {} {} ", parent_node_x, parent_node_y);
 
         let node_pos_x = parent_node_x + self.float_frame.pos.x * parent_node_rect.size.width as f32;
         let node_pos_y = parent_node_y + self.float_frame.pos.y * parent_node_rect.size.height as f32;
 
-        println!("2. {} {} {}", node_pos_x, node_pos_y, self.float_frame.pos.x * parent_node_rect.size.width as f32);
-
         let mut node_x = node_pos_x - node_width * self.anchor_point.x;
         let mut node_y = node_pos_y - node_height * self.anchor_point.y;
 
-//        if node_x < 0.0 {
-//            node_width += node_x;
-//            node_x = 0.0;
-//        }
-//
-//        if node_y < 0.0 {
-//            node_height += node_y;
-//            node_y = 0.0;
-//        }
-
-        println!("fix_rect_for_parent_fix_rect.2 {} {} {} {} {}", self.tag, parent_node_x, parent_node_y, node_x, node_y);
-
         Rect {
             pos : Pos {
-                x : node_x as u32,
-                y : node_y as u32,
+                x : node_x as i32,
+                y : node_y as i32,
             },
             size : Size {
-                width : node_width as u32,
-                height : node_height as u32,
+                width : node_width as i32,
+                height : node_height as i32,
             },
         }
     }
@@ -81,7 +64,6 @@ impl<'a, 'b : 'a> Node<'a> {
 
     pub fn draw_if_need(&mut self, screen_info:&ScreenInfo) {
         if self.need_draw {
-            println!("node {} {:?}", self.tag, self.frame);
             self.sprite.draw(&self.frame, screen_info);
             self.need_draw = false;
         }

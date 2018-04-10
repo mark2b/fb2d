@@ -65,25 +65,25 @@ impl<'a> Sprite<'a> for TextureSprite {
             let frame_aspect = outer_rect.size.width as f32 / outer_rect.size.height as f32;
             let image_aspect = image.width() as f32 / image.height() as f32;
 
-            let mut width: u32;
-            let mut height: u32;
+            let mut width: i32;
+            let mut height: i32;
 
             if frame_aspect < image_aspect {
                 width = outer_rect.size.width;
-                height = (width as f32 / image_aspect) as u32;
+                height = (width as f32 / image_aspect) as i32;
             } else {
                 height = outer_rect.size.height;
-                width = (height as f32 * image_aspect) as u32;
+                width = (height as f32 * image_aspect) as i32;
             }
 
-            let new_image = image.resize(width, height, imageops::Gaussian);
+            let new_image = image.resize(width as u32, height as u32, imageops::Gaussian);
             self.raw_pixels = new_image.raw_pixels();
-            width = new_image.width();
-            height = new_image.height();
+            width = new_image.width() as i32;
+            height = new_image.height() as i32;
 
             let mut frame = Rect {pos : POS_ZERO, size : Size {width : width, height : height}};
-            frame.pos.x = ((outer_rect.size.width as f32 * self.gravity.x) - (frame.size.width as f32 * self.gravity.x)) as u32;
-            frame.pos.y = ((outer_rect.size.height as f32 * self.gravity.y) - (frame.size.height as f32 * self.gravity.y)) as u32;
+            frame.pos.x = ((outer_rect.size.width as f32 * self.gravity.x) - (frame.size.width as f32 * self.gravity.x)) as i32;
+            frame.pos.y = ((outer_rect.size.height as f32 * self.gravity.y) - (frame.size.height as f32 * self.gravity.y)) as i32;
             self.frame = frame;
         }
     }

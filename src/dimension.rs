@@ -36,14 +36,14 @@ pub struct Scale {
 
 #[derive(Debug, Copy, Clone)]
 pub struct Pos {
-    pub x: u32,
-    pub y: u32,
+    pub x: i32,
+    pub y: i32,
 }
 
 #[derive(Debug, Copy, Clone)]
 pub struct Size {
-    pub width: u32,
-    pub height: u32,
+    pub width: i32,
+    pub height: i32,
 }
 
 #[derive(Debug, Copy, Clone)]

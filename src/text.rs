@@ -2,7 +2,7 @@ extern crate rusttype;
 
 use std::cmp;
 use std::fs;
-use std::u32;
+use std::i32;
 use rusttype::{Font, FontCollection, point, PositionedGlyph};
 
 use color::*;
@@ -58,16 +58,16 @@ impl<'a> Sprite<'a> for TextSprite {
         let glyphs: Vec<PositionedGlyph> = self.font.layout(self.text.as_ref(), scale, offset).collect();
 
         let text_frame = {
-            let mut min_x = u32::MAX;
-            let mut max_x = u32::MIN;
-            let mut min_y = u32::MAX;
-            let mut max_y = u32::MIN;
+            let mut min_x = i32::MAX;
+            let mut max_x = 0_i32;
+            let mut min_y = i32::MAX;
+            let mut max_y = 0_i32;
             for g in glyphs.clone() {
                 if let Some(bb) = g.pixel_bounding_box() {
-                    min_x = cmp::min(min_x, bb.min.x as u32);
-                    max_x = cmp::max(max_x, bb.max.x as u32);
-                    min_y = cmp::min(min_y, bb.min.y as u32);
-                    max_y = cmp::max(max_y, bb.max.y as u32);
+                    min_x = cmp::min(min_x, bb.min.x);
+                    max_x = cmp::max(max_x, bb.max.x);
+                    min_y = cmp::min(min_y, bb.min.y);
+                    max_y = cmp::max(max_y, bb.max.y);
                 }
             }
             Rect {pos : Pos {x : min_x, y : min_y} , size : Size {width : max_x - min_x, height : max_y - min_y}}
@@ -80,8 +80,8 @@ impl<'a> Sprite<'a> for TextSprite {
         self.raw_pixels = vec![0; buffer_size];
         let raw_pixels_ptr = self.raw_pixels.as_mut_slice().as_mut_ptr();
 
-        frame.pos.x = ((outer_rect.size.width as f32 * self.gravity.x) - (frame.size.width as f32 * self.gravity.x)) as u32;
-        frame.pos.y = ((outer_rect.size.height as f32 * self.gravity.y) - (frame.size.height as f32 * self.gravity.y)) as u32;
+        frame.pos.x = ((outer_rect.size.width as f32 * self.gravity.x) - (frame.size.width as f32 * self.gravity.x)) as i32;
+        frame.pos.y = ((outer_rect.size.height as f32 * self.gravity.y) - (frame.size.height as f32 * self.gravity.y)) as i32;
 
 
         for g in glyphs.clone() {
