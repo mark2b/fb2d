@@ -29,10 +29,10 @@ impl<'a> Sprite<'a> for RectSprite {
         self.raw_pixels = vec![c; size];
     }
 
-    fn render(&mut self, fixed_rect:&Rect, screen_info:&ScreenInfo, canvas_ptr:*mut u32) {
+    fn render(&mut self, parent_node_frame:&Rect, node_frame:&Rect, clip_to_bounds:bool, screen_info:&ScreenInfo, canvas_ptr:*mut u32) {
         let src_slice_ptr_u32 = self.raw_pixels.as_ptr() as *mut u32;
         let inner_frame = Rect { pos: POS_ZERO, size: Size { width: self.rect.size.width, height : self.rect.size.height}};
 
-        render_to_canvas(src_slice_ptr_u32, fixed_rect, &inner_frame, screen_info, canvas_ptr);
+        render_to_canvas(src_slice_ptr_u32, parent_node_frame,node_frame, &inner_frame,clip_to_bounds, screen_info, canvas_ptr);
     }
 }

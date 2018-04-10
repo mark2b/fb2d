@@ -118,24 +118,27 @@ impl<'a> Scene<'a> {
         if let Some(ref root_node) = self.nodes.get(&self.root_node_key) {
             let mut root_node_mut = root_node.borrow_mut();
             root_node_mut.draw_if_need(screen_info);
-            root_node_mut.render(screen_info, self.canvas_buffer.borrow_mut().as_mut_ptr() as *mut u32);
+            let root_node_frame = root_node_mut.frame;
+            root_node_mut.render(&root_node_frame, screen_info, self.canvas_buffer.borrow_mut().as_mut_ptr() as *mut u32);
 
             if let Some(key_cell) = self.hierarchy.get(&root_node_mut.key) {
                 let mut children_keys = key_cell.borrow_mut();
-                self.render_nodes(&children_keys, screen_info);
+                self.render_nodes(&root_node_frame, &children_keys, screen_info);
             }
         }
     }
 
-    fn render_nodes(&self, nodes_keys:&Vec<NodeKey>, screen_info:&ScreenInfo) {
+    fn render_nodes(&self, parent_node_frame:&Rect, nodes_keys:&Vec<NodeKey>, screen_info:&ScreenInfo) {
         for node_key in nodes_keys {
             if let Some(ref node) = self.nodes.get(node_key) {
+
                 let mut node_mut = node.borrow_mut();
-                node_mut.render(screen_info, self.canvas_buffer.borrow_mut().as_mut_ptr() as *mut u32);
+
+                node_mut.render(parent_node_frame, screen_info, self.canvas_buffer.borrow_mut().as_mut_ptr() as *mut u32);
 
                 if let Some(key_cell) = self.hierarchy.get(&node_mut.key) {
                     let mut children_keys = key_cell.borrow_mut();
-                    self.render_nodes(&children_keys, screen_info);
+                    self.render_nodes(&node_mut.frame, &children_keys, screen_info);
                 }
             }
         }

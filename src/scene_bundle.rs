@@ -118,6 +118,7 @@ fn process_box_attributes<'a>(attributes: Vec<xml::attribute::OwnedAttribute>) -
     let pos = resolve_position_from_attributes(&attributes, FLOAT_POS_ZERO);
     let size = resolve_size_from_attributes(&attributes, FLOAT_SIZE_HALF);
     let anchor_point = resolve_anchor_from_attributes(&attributes, ANCHOR_POINT_CENTER);
+    let clip_to_bounds = resolve_bool_from_attributes("clip_to_bounds", &attributes, false);
 
     let mut box_sprite = shape::RectSprite::new();
     box_sprite.color = color;
@@ -130,6 +131,7 @@ fn process_box_attributes<'a>(attributes: Vec<xml::attribute::OwnedAttribute>) -
     );
     node.anchor_point = anchor_point;
     node.tag = tag;
+    node.clip_to_bounds = clip_to_bounds;
     node
 }
 
@@ -147,6 +149,7 @@ fn process_text_attributes<'a>(
     let height = resolve_float_from_attributes("height", &attributes, 1.0);
     let text = resolve_text_from_attributes("text", &attributes, String::new());
     let font_filename = resolve_text_from_attributes("font", &attributes, String::new());
+    let clip_to_bounds = resolve_bool_from_attributes("clip_to_bounds", &attributes, false);
 
     let mut text_sprite = text::TextSprite::new();
     text_sprite.height = height;
@@ -171,6 +174,7 @@ fn process_text_attributes<'a>(
     );
     node.anchor_point = anchor_point;
     node.tag = tag;
+    node.clip_to_bounds = clip_to_bounds;
     node
 }
 
@@ -183,6 +187,7 @@ fn process_texture_attributes<'a>(
     let size = resolve_size_from_attributes(&attributes, FLOAT_SIZE_HALF);
     let anchor_point = resolve_anchor_from_attributes(&attributes, ANCHOR_POINT_CENTER);
     let texture_filename = resolve_text_from_attributes("image", &attributes, String::new());
+    let clip_to_bounds = resolve_bool_from_attributes("clip_to_bounds", &attributes, false);
 
     let mut texture_sprite = TextureSprite::new();
 
@@ -202,6 +207,7 @@ fn process_texture_attributes<'a>(
     );
     node.anchor_point = anchor_point;
     node.tag = tag;
+    node.clip_to_bounds = clip_to_bounds;
     node
 }
 
@@ -308,6 +314,18 @@ fn resolve_text_from_attributes(
 ) -> String {
     if let Some(attribute) = attribute_by_name(attributes, name) {
         return attribute.value.clone();
+    }
+    default
+}
+
+fn resolve_bool_from_attributes(
+    name: &str,
+    attributes: &Vec<xml::attribute::OwnedAttribute>,
+    default: bool,
+) -> bool {
+    if let Some(attribute) = attribute_by_name(attributes, name) {
+        let value = attribute.value.to_lowercase();
+        return value == "true" || value == "yes";
     }
     default
 }

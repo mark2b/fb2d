@@ -88,10 +88,7 @@ impl<'a> Sprite<'a> for TextureSprite {
         }
     }
 
-    fn render(&mut self, fixed_rect:&Rect, screen_info:&ScreenInfo, canvas_ptr:*mut u32) {
-
-        println!("render {:?}", fixed_rect);
-
-        render_to_canvas(self.raw_pixels.as_slice().as_ptr() as *mut u32, fixed_rect, &self.frame, screen_info, canvas_ptr);
+    fn render(&mut self, parent_node_frame:&Rect, node_frame:&Rect, clip_to_bounds:bool, screen_info:&ScreenInfo, canvas_ptr:*mut u32) {
+        render_to_canvas(self.raw_pixels.as_slice().as_ptr() as *mut u32, parent_node_frame, node_frame, &self.frame, clip_to_bounds, screen_info, canvas_ptr);
     }
 }

@@ -52,6 +52,8 @@ pub struct Rect {
     pub size: Size,
 }
 
+
+
 pub const FLOAT_POS_ZERO : FloatPos = FloatPos {x : 0.0, y : 0.0};
 pub const FLOAT_POS_CENTER : FloatPos = FloatPos {x : 0.5, y : 0.5};
 pub const FLOAT_SIZE_ZERO : FloatSize = FloatSize {width : 0.0, height : 0.0};

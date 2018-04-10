@@ -17,6 +17,7 @@ pub struct Node<'a> {
     pub frame : Rect,
     pub need_draw: bool,
     sprite: Box<Sprite<'a>>,
+    pub clip_to_bounds : bool
 }
 
 pub type NodeKey = [u8;16];
@@ -69,8 +70,8 @@ impl<'a, 'b : 'a> Node<'a> {
         }
     }
 
-    pub fn render(&mut self, screen_info:&ScreenInfo, canvas_ptr:*mut u32) {
-        self.sprite.render(&self.frame, screen_info, canvas_ptr);
+    pub fn render(&mut self, parent_node_frame:&Rect, screen_info:&ScreenInfo, canvas_ptr:*mut u32) {
+        self.sprite.render(parent_node_frame,&self.frame, self.clip_to_bounds, screen_info, canvas_ptr);
     }
 
     fn generate_key() -> [u8;16] {
@@ -91,6 +92,7 @@ impl<'a, 'b : 'a> Node<'a> {
             frame: RECT_ZERO,
             need_draw: true,
             sprite: Box::new(sprite),
+            clip_to_bounds : true,
         }
     }
 
@@ -103,6 +105,7 @@ impl<'a, 'b : 'a> Node<'a> {
              frame: RECT_ZERO,
              need_draw: true,
              sprite: Box::new(sprite),
+             clip_to_bounds : true,
         }
     }
 
@@ -115,6 +118,7 @@ impl<'a, 'b : 'a> Node<'a> {
             frame: RECT_ZERO,
             need_draw: true,
             sprite: Box::new(sprite),
+            clip_to_bounds : true,
         }
     }
 }
