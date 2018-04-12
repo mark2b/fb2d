@@ -1,13 +1,13 @@
 <scene color="#ffa500">
-    <box pos="0" size="95% 95%" anchor-point="0.5" color="#F0C0C0C0">
-        <text pos="0 15%" size="100% 10%" anchor-point="0.5 0" height="100%" text="Lorem ipsum dolor sit amet," font="Times New Roman.ttf" color="red"/>
-        <text pos="0 30%" size="100% 10%" anchor-point="0.5 0" height="90%" text="consectetur adipiscing elit, sed do"  color="blue" />
-        <text pos="0 45%" size="100% 10%" anchor-point="0.5 0" height="80%" text="eiusmod tempor incididunt ut" />
-        <text pos="0 60%" size="100% 10%" anchor-point="0.5 0" height="70%" text="labore et dolore magna aliqua." />
-        <text pos="0 75%" size="100% 10%" anchor-point="0.5 0" height="60%" text="Ut enim ad minim veniam," />
-        <text pos="0 90%" size="100% 10%" anchor-point="0.5 0" height="50%" text="quis nostrud exercitation ullamco" />
+    <box pos="0" size="95% 95%" anchor-point="0.5 0" color="#F0C0C0C0">
+        <text pos="0 -40%" size="100% 10%" anchor-point="0.5 0" height="100%" text="Lorem ipsum dolor sit amet," font="Times New Roman.ttf" color="red"/>
+        <text pos="0 -30%" size="100% 10%" anchor-point="0.5 0" height="90%" text="consectetur adipiscing elit, sed do" color="blue" />
+        <text pos="0 -20%" size="100% 10%" anchor-point="0.5 0" height="80%" text="eiusmod tempor incididunt ut" color="white" />
+        <text pos="0 -10%" size="100% 10%" anchor-point="0.5 0" height="70%" text="labore et dolore magna aliqua." color="white" />
+        <text pos="0 0%"   size="100% 10%" anchor-point="0.5 0" height="60%" text="Ut enim ad minim veniam,"  color="white"/>
+        <text pos="0 10%"  size="100% 10%" anchor-point="0.5 0" height="50%" text="quis nostrud exercitation ullamco"  color="white"/>
     </box>
     <box pos="0%" size="25% 25%" anchor-point="0 1" color="olive" alpha="0.5">
-        <image pos="0" size="100% 100%" image="image1.png" />
+        <image pos="0" size="100% 100%" anchor-point="0 1" image="image1.png" />
     </box>
 </scene>
