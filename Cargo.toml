@@ -33,9 +33,6 @@ path = "examples/simple_sprite.rs"
 name = "simple-browser"
 path = "examples/simple_browser.rs"
 
-[features]
-simulator=[]
-
 [dev-dependencies]
 clap = "2.31"
 ctrlc = "3.1.0"

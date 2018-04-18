@@ -153,7 +153,7 @@ impl<'a> Scene<'a> {
         }
     }
 
-    #[cfg(not(feature = "simulator"))]
+    #[cfg(target_os = "linux")]
     pub fn run(&mut self) {
 
         if let Some(ref writer) = self.writer {
@@ -185,7 +185,7 @@ impl<'a> Scene<'a> {
         }
     }
 
-    #[cfg(feature = "simulator")]
+    #[cfg(not(target_os = "linux"))]
     pub fn run(&mut self) {
         if let Some(ref writer) = self.writer {
             let screen_info = writer.get_screen_info();
