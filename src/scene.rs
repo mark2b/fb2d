@@ -13,6 +13,7 @@ pub struct Scene<'a> {
     pub nodes: HashMap<NodeKey,cell::RefCell<Node<'a>>>,
     pub hierarchy: HashMap<NodeKey,cell::RefCell<Vec<NodeKey>>>,
     root_node_key:NodeKey,
+    need_exit:bool,
     fps:u32,
     dirty:bool,
 }
@@ -28,6 +29,7 @@ impl<'a> Scene<'a> {
             nodes : HashMap::new(),
             hierarchy: HashMap::new(),
             root_node_key : EMPTY_NODE_KEY,
+            need_exit : false,
         }
     }
 
@@ -164,6 +166,10 @@ impl<'a> Scene<'a> {
             let mut counter = 0;
             self.layout(screen_info);
             loop {
+                if self.need_exit {
+                    self.need_exit = false;
+                    break;
+                }
                 let start_time = time::SystemTime::now();
                 if self.dirty {
                     self.render_frame(screen_info);
@@ -181,11 +187,14 @@ impl<'a> Scene<'a> {
                     println!("duration:{:?}", duration);
                 }
             }
-
         }
     }
 
-    #[cfg(not(target_os = "linux"))]
+    pub fn stop(&mut self) {
+        self.need_exit = true;
+    }
+    
+        #[cfg(not(target_os = "linux"))]
     pub fn run(&mut self) {
         if let Some(ref writer) = self.writer {
             let screen_info = writer.get_screen_info();
