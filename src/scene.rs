@@ -12,7 +12,7 @@ use dimension::*;
 use node::*;
 
 pub struct SceneState {
-    running: bool,
+    pub running: bool,
 }
 
 type OnEveryFrame = fn(state: SceneState) -> SceneState;
