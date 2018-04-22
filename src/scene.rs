@@ -1,9 +1,5 @@
 use std::cell;
-use std::rc;
 use std::collections::*;
-use std::sync;
-use std::sync::mpsc::{Receiver, Sender};
-use std::sync::mpsc;
 use std::time;
 use std::thread::sleep;
 use screen_writer::{ScreenInfo, ScreenWriter};
@@ -199,8 +195,6 @@ impl<'a> Scene<'a> {
             let frame_duration = time::Duration::from_millis((1000 / self.fps) as u64);
             let mut counter = 0;
             self.layout(screen_info);
-
-            let (tx, rx): (Sender<i32>, Receiver<i32>) = mpsc::channel();
 
             let mut state = SceneState { running: true };
 

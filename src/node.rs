@@ -35,8 +35,8 @@ impl<'a, 'b : 'a> Node<'a> {
 
     pub fn fix_rect_for_parent_fix_rect(&self, parent_node_rect:&Rect, parent_anchor_point:&AnchorPoint) -> Rect {
 
-        let mut node_width = self.float_frame.size.width * parent_node_rect.size.width as f32;
-        let mut node_height = self.float_frame.size.height * parent_node_rect.size.height as f32;
+        let node_width = self.float_frame.size.width * parent_node_rect.size.width as f32;
+        let node_height = self.float_frame.size.height * parent_node_rect.size.height as f32;
 
         let parent_node_x = parent_node_rect.pos.x as f32 + parent_node_rect.size.width as f32 * parent_anchor_point.x;
         let parent_node_y = parent_node_rect.pos.y as f32 + parent_node_rect.size.height as f32 * parent_anchor_point.y;
@@ -44,8 +44,8 @@ impl<'a, 'b : 'a> Node<'a> {
         let node_pos_x = parent_node_x + self.float_frame.pos.x * parent_node_rect.size.width as f32;
         let node_pos_y = parent_node_y + self.float_frame.pos.y * parent_node_rect.size.height as f32;
 
-        let mut node_x = node_pos_x - node_width * self.anchor_point.x;
-        let mut node_y = node_pos_y - node_height * self.anchor_point.y;
+        let node_x = node_pos_x - node_width * self.anchor_point.x;
+        let node_y = node_pos_y - node_height * self.anchor_point.y;
 
         Rect {
             pos : Pos {

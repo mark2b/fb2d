@@ -44,8 +44,9 @@ impl TextSprite {
     pub fn set_font_file(&mut self, file: &mut fs::File) {
         use std::io::Read;
         let mut font_data : Vec<u8> = Vec::new();
-        file.read_to_end(&mut font_data);
-        self.font = FontCollection::from_bytes(font_data).unwrap().into_font().unwrap();
+        if let Ok(_) = file.read_to_end(&mut font_data) {
+            self.font = FontCollection::from_bytes(font_data).unwrap().into_font().unwrap();
+        }
     }
 }
 
