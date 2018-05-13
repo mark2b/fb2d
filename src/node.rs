@@ -10,6 +10,7 @@ use shape::*;
 use sprite::*;
 
 pub struct Node<'a> {
+    pub visible : bool,
     pub key : NodeKey,
     pub tag : String,
     pub float_frame : FloatRect,
@@ -87,6 +88,7 @@ impl<'a, 'b : 'a> Node<'a> {
         Node {
             key : Self::generate_key(),
             tag : String::new(),
+            visible : true,
             float_frame : float_frame,
             anchor_point: ANCHOR_POINT_CENTER,
             frame: RECT_ZERO,
@@ -100,6 +102,7 @@ impl<'a, 'b : 'a> Node<'a> {
          Node {
              key : Self::generate_key(),
              tag : String::new(),
+             visible : true,
              float_frame : float_frame,
              anchor_point: ANCHOR_POINT_CENTER,
              frame: RECT_ZERO,
@@ -113,6 +116,7 @@ impl<'a, 'b : 'a> Node<'a> {
         Node {
             key : Self::generate_key(),
             tag : String::new(),
+            visible : true,
             float_frame : float_frame,
             anchor_point: ANCHOR_POINT_CENTER,
             frame: RECT_ZERO,

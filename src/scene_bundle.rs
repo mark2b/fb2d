@@ -111,6 +111,7 @@ fn process_scene_attributes<'a>(
 }
 
 fn process_box_attributes<'a>(attributes: Vec<xml::attribute::OwnedAttribute>) -> node::Node<'a> {
+    let visible = resolve_bool_from_attributes("visible", &attributes, true);
     let tag = resolve_text_from_attributes("tag", &attributes, String::new());
     let alpha = resolve_float_from_attributes("alpha", &attributes, 1.0);
     let color =
@@ -132,6 +133,7 @@ fn process_box_attributes<'a>(attributes: Vec<xml::attribute::OwnedAttribute>) -
     node.anchor_point = anchor_point;
     node.tag = tag;
     node.clip_to_bounds = clip_to_bounds;
+    node.visible = visible;
     node
 }
 
@@ -139,6 +141,7 @@ fn process_text_attributes<'a>(
     attributes: Vec<xml::attribute::OwnedAttribute>,
     scene_bundle: &resource::SceneBundle,
 ) -> node::Node<'a> {
+    let visible = resolve_bool_from_attributes("visible", &attributes, true);
     let tag = resolve_text_from_attributes("tag", &attributes, String::new());
     let alpha = resolve_float_from_attributes("alpha", &attributes, 1.0);
     let color =
@@ -175,6 +178,7 @@ fn process_text_attributes<'a>(
     node.anchor_point = anchor_point;
     node.tag = tag;
     node.clip_to_bounds = clip_to_bounds;
+    node.visible = visible;
     node
 }
 
@@ -182,6 +186,7 @@ fn process_texture_attributes<'a>(
     attributes: Vec<xml::attribute::OwnedAttribute>,
     scene_bundle: &resource::SceneBundle,
 ) -> node::Node<'a> {
+    let visible = resolve_bool_from_attributes("visible", &attributes, true);
     let tag = resolve_text_from_attributes("tag", &attributes, String::new());
     let pos = resolve_position_from_attributes(&attributes, FLOAT_POS_ZERO);
     let size = resolve_size_from_attributes(&attributes, FLOAT_SIZE_HALF);
@@ -208,6 +213,7 @@ fn process_texture_attributes<'a>(
     node.anchor_point = anchor_point;
     node.tag = tag;
     node.clip_to_bounds = clip_to_bounds;
+    node.visible = visible;
     node
 }
 

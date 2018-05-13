@@ -1,6 +1,6 @@
 <scene color="#ffa500">
     <box pos="0" size="95% 95%" anchor-point="0.5 0" color="#F0C0C0C0">
-        <text pos="0 -40%" size="100% 10%" anchor-point="0.5 0" height="100%" text="Lorem ipsum dolor sit amet," font="Times New Roman.ttf" color="red"/>
+        <text pos="0 -40%" size="100% 10%" anchor-point="0.5 0" height="100%" text="שלום Hello" font="Times New Roman.ttf" color="red"/>
         <text pos="0 -30%" size="100% 10%" anchor-point="0.5 0" height="90%" text="consectetur adipiscing elit, sed do" color="blue" />
         <text pos="0 -20%" size="100% 10%" anchor-point="0.5 0" height="80%" text="eiusmod tempor incididunt ut" color="white" />
         <text pos="0 -10%" size="100% 10%" anchor-point="0.5 0" height="70%" text="labore et dolore magna aliqua." color="white" />
