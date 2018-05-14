@@ -44,7 +44,6 @@ impl TextureSprite {
 
     pub fn set_texture_filename(&mut self, filename: &str) {
         let file: fs::File = fs::File::open(filename).unwrap();
-        println!("{:?}", file);
         let reader = io::BufReader::new(file);
         let load_result = image::load(reader, image::PNG).unwrap();
         self.texture = Some(load_result);
@@ -76,7 +75,7 @@ impl<'a> Sprite<'a> for TextureSprite {
                 width = (height as f32 * image_aspect) as i32;
             }
 
-            let new_image = image.resize(width as u32, height as u32, imageops::Gaussian);
+            let new_image = image.resize(width as u32, height as u32, imageops::Triangle);
             self.raw_pixels = new_image.raw_pixels();
             width = new_image.width() as i32;
             height = new_image.height() as i32;

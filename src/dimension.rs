@@ -23,7 +23,7 @@ pub struct AnchorPoint {
 }
 
 #[derive(Debug, Copy, Clone)]
-pub struct Gravity {
+pub struct  Gravity {
     pub x: f32,
     pub y: f32,
 }
