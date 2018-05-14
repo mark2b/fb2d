@@ -28,11 +28,20 @@ impl TextureSprite {
         }
     }
 
-    pub fn new_for_texture(filename: &str) -> TextureSprite {
-
+    fn load_image(filename: &str) -> DynamicImage {
         let file: fs::File = fs::File::open(filename).unwrap();
         let reader = io::BufReader::new(file);
-        let load_result = image::load(reader, image::PNG).unwrap();
+        if filename.to_lowercase().ends_with(".png") {
+            image::load(reader, image::PNG).unwrap()
+        } else if filename.to_lowercase().ends_with(".png") {
+            image::load(reader, image::JPEG).unwrap()
+        } else {
+            image::load(reader, image::PNG).unwrap()
+        }
+    }
+
+    pub fn new_for_texture(filename: &str) -> TextureSprite {
+        let load_result = TextureSprite::load_image(filename);
 
         TextureSprite {
             raw_pixels : load_result.raw_pixels(),
@@ -43,9 +52,7 @@ impl TextureSprite {
     }
 
     pub fn set_texture_filename(&mut self, filename: &str) {
-        let file: fs::File = fs::File::open(filename).unwrap();
-        let reader = io::BufReader::new(file);
-        let load_result = image::load(reader, image::PNG).unwrap();
+        let load_result = TextureSprite::load_image(filename);
         self.texture = Some(load_result);
     }
 

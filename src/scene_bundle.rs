@@ -197,11 +197,7 @@ fn process_texture_attributes<'a>(
     let mut texture_sprite = TextureSprite::new();
 
     let texture_filename_path = scene_bundle.target_path().join(texture_filename);
-
-    match fs::File::open(texture_filename_path) {
-        Ok(texture_file) => texture_sprite.set_texture_file(texture_file),
-        Err(e) => println!("{:?}", e),
-    }
+    texture_sprite.set_texture_filename(texture_filename_path.into_os_string().into_string().unwrap().as_ref());
 
     let mut node = node::Node::new_texture_node(
         FloatRect {
