@@ -10,7 +10,7 @@ use sprite::{Sprite, render_to_canvas};
 
 pub struct TextureSprite {
     pub gravity : Gravity,
-
+    pub filter : imageops::FilterType,
     texture : Option<DynamicImage>,
     raw_pixels : Vec<u8>,
     frame : Rect,
@@ -24,6 +24,7 @@ impl TextureSprite {
             raw_pixels : Vec::new(),
             gravity : GRAVITY_CENTER,
             texture : None,
+            filter : imageops::Triangle,
             frame : RECT_ZERO,
         }
     }
@@ -45,6 +46,7 @@ impl TextureSprite {
 
         TextureSprite {
             raw_pixels : load_result.raw_pixels(),
+            filter : imageops::Triangle,
             gravity : GRAVITY_CENTER,
             texture : Some(load_result),
             frame : RECT_ZERO,
@@ -53,12 +55,6 @@ impl TextureSprite {
 
     pub fn set_texture_filename(&mut self, filename: &str) {
         let load_result = TextureSprite::load_image(filename);
-        self.texture = Some(load_result);
-    }
-
-    pub fn set_texture_file(&mut self, file: fs::File) {
-        let reader = io::BufReader::new(file);
-        let load_result = image::load(reader, image::PNG).unwrap();
         self.texture = Some(load_result);
     }
 }
@@ -82,7 +78,7 @@ impl<'a> Sprite<'a> for TextureSprite {
                 width = (height as f32 * image_aspect) as i32;
             }
 
-            let new_image = image.resize(width as u32, height as u32, imageops::Triangle);
+            let new_image = image.resize(width as u32, height as u32, self.filter);
             self.raw_pixels = new_image.raw_pixels();
             width = new_image.width() as i32;
             height = new_image.height() as i32;

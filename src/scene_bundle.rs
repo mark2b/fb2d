@@ -2,10 +2,12 @@ extern crate log;
 extern crate tempdir;
 extern crate uuid;
 extern crate xml;
+extern crate image;
 
 use std::fs;
 use std::f32;
 use xml::reader::{EventReader, XmlEvent};
+use image::{imageops};
 
 use color::Color;
 use color;
@@ -193,11 +195,29 @@ fn process_texture_attributes<'a>(
     let anchor_point = resolve_anchor_from_attributes(&attributes, ANCHOR_POINT_CENTER);
     let texture_filename = resolve_text_from_attributes("image", &attributes, String::new());
     let clip_to_bounds = resolve_bool_from_attributes("clip_to_bounds", &attributes, false);
+    let filter = resolve_text_from_attributes("filter", &attributes, String::from("triangle")).to_lowercase();
 
     let mut texture_sprite = TextureSprite::new();
 
     let texture_filename_path = scene_bundle.target_path().join(texture_filename);
     texture_sprite.set_texture_filename(texture_filename_path.into_os_string().into_string().unwrap().as_ref());
+
+    texture_sprite.filter = {
+        if filter == "nearest" {
+            imageops::Nearest
+        } else if filter == "triangle" {
+            imageops::Triangle
+        } else if filter == "catmullRom" {
+            imageops::CatmullRom
+        } else if filter == "gaussian" {
+            imageops::Gaussian
+        } else if filter == "lanczos3" {
+            imageops::Lanczos3
+        } else {
+            imageops::Triangle
+        }
+    };
+
 
     let mut node = node::Node::new_texture_node(
         FloatRect {
