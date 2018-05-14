@@ -58,14 +58,17 @@ impl<'a> Sprite<'a> for TextSprite {
         let v_metrics = self.font.v_metrics(scale);
         let offset = point(0.0, v_metrics.ascent);
 
-        let mut normalized_text = self.text.clone();
+        let normalized_text = {
+            let bidi_info = unicode_bidi::BidiInfo::new(self.text.as_ref(), None);
+            if bidi_info.paragraphs.len() > 0 {
+                let para = &bidi_info.paragraphs[0];
+                let line = para.range.clone();
+                String::from(bidi_info.reorder_line(para, line))
+            } else {
+                self.text.clone()
+            }
+        };
 
-        let bidi_info = unicode_bidi::BidiInfo::new(self.text.as_ref(), None);
-        if bidi_info.paragraphs.len() == 1 {
-            let para = &bidi_info.paragraphs[0];
-            let line = para.range.clone();
-            normalized_text = String::from(bidi_info.reorder_line(para, line));
-        }
 
         let glyphs: Vec<PositionedGlyph> = self.font.layout(normalized_text.as_ref(), scale, offset).collect();
 
