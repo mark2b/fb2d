@@ -2,8 +2,11 @@ extern crate ctrlc;
 extern crate fb2d;
 
 use std::process;
+use fb2d::version;
 
 fn main() {
+    println!("commit: {} {}", version::commit_date(), version::short_sha());
+
     ctrlc::set_handler(move || {
         fb2d::set_text_mode();
         process::exit(0);

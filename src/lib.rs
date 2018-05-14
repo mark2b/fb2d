@@ -29,3 +29,8 @@ mod shape;
 mod sprite;
 mod text;
 mod texture;
+
+pub mod version {
+    include!(concat!(env!("OUT_DIR"), "/version.rs"));
+}
+
