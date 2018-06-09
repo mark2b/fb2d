@@ -29,33 +29,52 @@ impl TextureSprite {
         }
     }
 
-    fn load_image(filename: &str) -> DynamicImage {
-        let file: fs::File = fs::File::open(filename).unwrap();
-        let reader = io::BufReader::new(file);
-        if filename.to_lowercase().ends_with(".png") {
-            image::load(reader, image::PNG).unwrap()
-        } else if filename.to_lowercase().ends_with(".png") {
-            image::load(reader, image::JPEG).unwrap()
-        } else {
-            image::load(reader, image::PNG).unwrap()
+    fn load_image(filename: &str) -> Result<DynamicImage, &str> {
+        match fs::File::open(filename) {
+            Ok(file) => {
+                let reader = io::BufReader::new(file);
+                if filename.to_lowercase().ends_with(".png") {
+                    Ok(image::load(reader, image::PNG).unwrap())
+                } else if filename.to_lowercase().ends_with(".jpg") {
+                    Ok(image::load(reader, image::JPEG).unwrap())
+                } else {
+                    Ok(image::load(reader, image::PNG).unwrap())
+                }
+            },
+            Err(e) => {
+                println!("{} {}", e, filename);
+                Err("Open image failed")
+            }
         }
     }
 
-    pub fn new_for_texture(filename: &str) -> TextureSprite {
-        let load_result = TextureSprite::load_image(filename);
+    pub fn new_for_texture(filename: &str) -> Result<TextureSprite, &str> {
 
-        TextureSprite {
-            raw_pixels : load_result.raw_pixels(),
-            filter : imageops::Triangle,
-            gravity : GRAVITY_CENTER,
-            texture : Some(load_result),
-            frame : RECT_ZERO,
+        match TextureSprite::load_image(filename) {
+            Ok(load_result) => {
+                Ok(TextureSprite {
+                    raw_pixels : load_result.raw_pixels(),
+                    filter : imageops::Triangle,
+                    gravity : GRAVITY_CENTER,
+                    texture : Some(load_result),
+                    frame : RECT_ZERO,
+                })
+            },
+            Err(e) => {
+                Err("Load image failed")
+            }
         }
     }
 
     pub fn set_texture_filename(&mut self, filename: &str) {
-        let load_result = TextureSprite::load_image(filename);
-        self.texture = Some(load_result);
+        match TextureSprite::load_image(filename) {
+            Ok(load_result) => {
+                self.texture = Some(load_result);
+            },
+            Err(e) => {
+                println!("{}", e);
+            }
+        }
     }
 }
 

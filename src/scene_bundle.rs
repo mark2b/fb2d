@@ -151,6 +151,7 @@ fn process_text_attributes<'a>(
     let pos = resolve_position_from_attributes(&attributes, FLOAT_POS_ZERO);
     let size = resolve_size_from_attributes(&attributes, FLOAT_SIZE_HALF);
     let anchor_point = resolve_anchor_from_attributes(&attributes, ANCHOR_POINT_CENTER);
+    let gravity = resolve_gravity_from_attributes(&attributes, GRAVITY_CENTER);
     let height = resolve_float_from_attributes("height", &attributes, 1.0);
     let text = resolve_text_from_attributes("text", &attributes, String::new());
     let font_filename = resolve_text_from_attributes("font", &attributes, String::new());
@@ -160,6 +161,7 @@ fn process_text_attributes<'a>(
     text_sprite.height = height;
     text_sprite.text = text;
     text_sprite.color = color;
+    text_sprite.gravity = gravity;
 
     if font_filename.len() > 0 {
         let font_filename_path = scene_bundle.target_path().join(font_filename);
@@ -193,6 +195,7 @@ fn process_texture_attributes<'a>(
     let pos = resolve_position_from_attributes(&attributes, FLOAT_POS_ZERO);
     let size = resolve_size_from_attributes(&attributes, FLOAT_SIZE_HALF);
     let anchor_point = resolve_anchor_from_attributes(&attributes, ANCHOR_POINT_CENTER);
+    let gravity = resolve_gravity_from_attributes(&attributes, GRAVITY_CENTER);
     let texture_filename = resolve_text_from_attributes("image", &attributes, String::new());
     let clip_to_bounds = resolve_bool_from_attributes("clip_to_bounds", &attributes, false);
     let filter = resolve_text_from_attributes("filter", &attributes, String::from("triangle")).to_lowercase();
@@ -201,7 +204,7 @@ fn process_texture_attributes<'a>(
 
     let texture_filename_path = scene_bundle.target_path().join(texture_filename);
     texture_sprite.set_texture_filename(texture_filename_path.into_os_string().into_string().unwrap().as_ref());
-
+    texture_sprite.gravity = gravity;
     texture_sprite.filter = {
         if filter == "nearest" {
             imageops::Nearest
@@ -317,6 +320,29 @@ fn resolve_anchor_from_attributes(
     }
     default
 }
+
+fn resolve_gravity_from_attributes(
+    attributes: &Vec<xml::attribute::OwnedAttribute>,
+    default: Gravity,
+) -> Gravity {
+    if let Some(attribute) = attribute_by_name(attributes, "gravity") {
+        let value = &attribute.value;
+        let tokens: Vec<&str> = value.split_whitespace().collect();
+        if tokens.len() == 2 {
+            return Gravity {
+                x: resolve_float_from_value(tokens[0], default.x),
+                y: resolve_float_from_value(tokens[1], default.y),
+            };
+        } else if tokens.len() == 1 {
+            return Gravity {
+                x: resolve_float_from_value(tokens[0], default.x),
+                y: resolve_float_from_value(tokens[0], default.y),
+            };
+        }
+    }
+    default
+}
+
 fn resolve_float_from_attributes(
     name: &str,
     attributes: &Vec<xml::attribute::OwnedAttribute>,
